@@ -1,5 +1,7 @@
 require('dotenv').config();
+require('pg'); // Explicitly require pg for Vercel/Sequelize
 const { Sequelize } = require('sequelize');
+
 
 const isProduction = process.env.NODE_ENV === 'production';
 
