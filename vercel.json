@@ -21,12 +21,9 @@
       "destination": "backend/src/index.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "/$1"
-    },
-    {
-      "source": "/(.*)",
+      "source": "/((?!api|uploads|assets|.*\\..*).*)",
       "destination": "/index.html"
     }
+
   ]
 }
