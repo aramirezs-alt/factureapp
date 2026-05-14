@@ -13,23 +13,21 @@
       }
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/backend/index.js"
+      "src": "/api/(.*)",
+      "dest": "/backend/index.js"
     },
     {
-      "source": "/uploads/(.*)",
-      "destination": "/backend/index.js"
+      "src": "/uploads/(.*)",
+      "dest": "/backend/index.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "/frontend/$1",
-      "continue": true
+      "handle": "filesystem"
     },
     {
-      "source": "/(.*)",
-      "destination": "/frontend/index.html"
+      "src": "/(.*)",
+      "dest": "/frontend/index.html"
     }
   ]
 }
