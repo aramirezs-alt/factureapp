@@ -58,7 +58,30 @@ app.post('/api/cron/trigger', async (req, res) => {
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
+  res.json({ 
+    status: 'ok', 
+    env: process.env.NODE_ENV,
+    hasDbUrl: !!process.env.DATABASE_URL,
+    hasJwtSecret: !!process.env.JWT_SECRET
+  });
+});
+
+app.get('/api/test-db', async (req, res) => {
+  try {
+    await sequelize.authenticate();
+    res.json({ message: 'Database connection ok' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/setup-db', async (req, res) => {
+  try {
+    await sequelize.sync({ alter: true });
+    res.json({ message: 'Database synchronized successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Database connection and server start
