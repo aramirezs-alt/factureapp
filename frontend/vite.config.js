@@ -18,8 +18,10 @@ export default defineConfig({
         orientation: 'portrait',
       },
       workbox: {
+        navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api/, /^\/uploads/]
       }
+
     })
   ],
 })

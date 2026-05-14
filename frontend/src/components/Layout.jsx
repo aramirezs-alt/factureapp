@@ -27,14 +27,18 @@ const Layout = ({ children }) => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isMobile, setIsMobile] = useState(() => 
+    typeof window !== 'undefined' ? window.innerWidth <= 768 : false
+  );
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   
   const [isDark, setIsDark] = useState(() => {
+    if (typeof window === 'undefined') return false;
     return localStorage.getItem('theme') === 'dark' || 
            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
   });
+
 
   useEffect(() => {
     const handleResize = () => {

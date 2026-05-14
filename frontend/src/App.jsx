@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast';
+import ErrorBoundary from './components/ErrorBoundary';
+
 
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -49,8 +51,6 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   
   return children;
 };
-
-import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   return (
