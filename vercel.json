@@ -22,11 +22,11 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/frontend/$1"
+      "destination": "/$1"
     },
     {
       "source": "/(.*)",
-      "destination": "/frontend/index.html"
+      "destination": "/index.html"
     }
   ]
 }

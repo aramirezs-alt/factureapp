@@ -217,6 +217,11 @@ const authController = {
       const token = req.cookies.token;
       if (!token) return res.json(null);
 
+      if (!process.env.JWT_SECRET) {
+        console.error('JWT_SECRET is not defined in environment variables');
+        return res.status(500).json({ message: 'Error de configuración del servidor (JWT)' });
+      }
+
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const user = await User.findByPk(decoded.id, {
         attributes: ['id', 'email', 'rol']
@@ -225,8 +230,12 @@ const authController = {
       if (!user) return res.json(null);
       res.json(user);
     } catch (error) {
-      // If token is invalid/expired, just return null instead of 401 to avoid console noise
-      res.json(null);
+      console.error('Check auth error:', error);
+      // Return a proper error if it's not just a missing/expired token
+      if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+        return res.json(null);
+      }
+      res.status(500).json({ message: 'Error de servidor en check-auth', error: error.message });
     }
   }
 };
