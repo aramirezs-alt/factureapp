@@ -7,23 +7,25 @@
       "config": { "distDir": "dist" }
     },
     {
-      "src": "backend/src/index.js",
+      "src": "backend/index.js",
       "use": "@vercel/node"
     }
+
   ],
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "backend/src/index.js"
+      "destination": "backend/index.js"
     },
     {
       "source": "/uploads/(.*)",
-      "destination": "backend/src/index.js"
+      "destination": "backend/index.js"
     },
     {
-      "source": "/((?!api|uploads|assets|.*\\..*).*)",
+      "source": "/((?!api|uploads|assets|favicon|apple-touch-icon|manifest|registerSW|sw|workbox|.*\\.).*)",
       "destination": "/index.html"
     }
-
   ]
 }
