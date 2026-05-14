@@ -16,7 +16,9 @@ export default defineConfig({
         background_color: '#F9FAFB',
         display: 'standalone',
         orientation: 'portrait',
-        // icons: [] // Requires real 192x192 and 512x512 PNGs for valid PWA install
+      },
+      workbox: {
+        navigateFallbackDenylist: [/^\/api/, /^\/uploads/]
       }
     })
   ],
