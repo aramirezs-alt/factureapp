@@ -10,22 +10,22 @@
       "src": "backend/index.js",
       "use": "@vercel/node"
     }
-
   ],
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "backend/index.js"
+      "src": "/api/(.*)",
+      "dest": "backend/index.js"
     },
     {
-      "source": "/uploads/(.*)",
-      "destination": "backend/index.js"
+      "src": "/uploads/(.*)",
+      "dest": "backend/index.js"
     },
     {
-      "source": "/((?!api|uploads|assets|favicon|apple-touch-icon|manifest|registerSW|sw|workbox|.*\\.).*)",
-      "destination": "/index.html"
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
