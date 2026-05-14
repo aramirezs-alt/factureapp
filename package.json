@@ -1,4 +1,10 @@
 {
+  "name": "factureapp-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Building monorepo...'"
+  },
   "dependencies": {
     "multer": "^2.1.1"
   }
