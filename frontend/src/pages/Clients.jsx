@@ -125,10 +125,7 @@ const Clients = () => {
           </div>
         </header>
 
-        {/* CSV format hint */}
-        <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', background: 'var(--primary-light)', borderRadius: 'var(--radius)', fontSize: '13px', color: 'var(--primary)' }}>
-          💡 Format CSV per importar (separador <b>;</b>): <code>nom;email;nif;telefon;adreca;codi_postal;ciutat;pais</code>
-        </div>
+
 
         <div className="card" style={{ padding: '0 1rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.75rem', height: '48px', border: '1px solid var(--border)' }}>
           <Search size={18} color="var(--text-secondary)" />
@@ -186,10 +183,16 @@ const Clients = () => {
       {showImportModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div className="card" style={{ width: '500px', maxWidth: '90vw', padding: '2rem', maxHeight: '80vh', overflowY: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h3>Importació CSV</h3>
               {!csvImporting && <button onClick={() => { setShowImportModal(false); setImportResult(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20} /></button>}
             </div>
+
+            <div style={{ marginBottom: '1.5rem', padding: '0.75rem', background: 'var(--bg-app)', borderRadius: '8px', fontSize: '12px', border: '1px solid var(--border)' }}>
+              <p style={{ marginBottom: '0.5rem', fontWeight: '600' }}>💡 Format requerit (separador ;):</p>
+              <code>nom;email;nif;telefon;adreca;codi_postal;ciutat;pais</code>
+            </div>
+
 
             {csvImporting && (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '2rem 0' }}>

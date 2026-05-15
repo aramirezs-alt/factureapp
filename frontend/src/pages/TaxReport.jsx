@@ -152,28 +152,65 @@ const TaxReport = () => {
             </table>
           </div>
 
-          <div className="card" style={{ background: 'var(--primary)', color: 'white' }}>
-            <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Calculator size={20} />
-              Previsión IRPF
-            </h3>
-            <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '1rem', lineHeight: '1.4' }}>
-              Estimación basada en el rendimiento neto (Ingresos - Gastos) aplicando el tipo general del <strong>20%</strong> en pagos fraccionados (Modelo 130).
-            </p>
-            <div style={{ padding: '0.75rem', background: 'rgba(0,0,0,0.15)', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '12px', lineHeight: '1.4' }}>
-              <span style={{ fontWeight: '600' }}>Nota:</span> Los autónomos de primer año pueden optar al tipo reducido del 7% y algunos gastos pueden no ser 100% deducibles. Esta es una estimación aproximada.
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                <span>Rendimiento Anual</span>
-                <span style={{ fontWeight: '600' }}>€{netProfit.toFixed(2)}</span>
+          <div className="card" style={{ 
+            background: 'var(--bg-card)', 
+            border: '2px solid var(--primary)',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: '100px',
+              height: '100px',
+              background: 'var(--primary)',
+              opacity: 0.05,
+              borderRadius: '0 0 0 100px',
+              zIndex: 0
+            }} />
+            
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)' }}>
+                <Calculator size={20} />
+                Previsión IRPF
+              </h3>
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '1rem', lineHeight: '1.5' }}>
+                Estimación basada en el rendimiento neto (Ingresos - Gastos) aplicando el tipo general del <strong style={{ color: 'var(--text-primary)' }}>20%</strong> en pagos fraccionados (Modelo 130).
+              </p>
+              <div style={{ 
+                padding: '0.75rem', 
+                background: 'var(--bg-app)', 
+                borderRadius: '8px', 
+                marginBottom: '1.5rem', 
+                fontSize: '12px', 
+                lineHeight: '1.4',
+                border: '1px solid var(--border)',
+                color: 'var(--text-secondary)'
+              }}>
+                <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>Nota:</span> Los autónomos de primer año pueden optar al tipo reducido del 7%. Esta es una estimación aproximada.
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', fontWeight: '800', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
-                <span>Pago Estimado</span>
-                <span>€{irpfEstimate.toFixed(2)}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Rendimiento Anual</span>
+                  <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>€{netProfit.toFixed(2)}</span>
+                </div>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  fontSize: '20px', 
+                  fontWeight: '800', 
+                  paddingTop: '1rem', 
+                  borderTop: '1px solid var(--border)',
+                  color: 'var(--primary)'
+                }}>
+                  <span>Pago Estimado</span>
+                  <span>€{irpfEstimate.toFixed(2)}</span>
+                </div>
               </div>
             </div>
           </div>
+
         </div>
 
         <div className="card" style={{ marginTop: '2rem', background: 'var(--bg-app)', borderStyle: 'dashed' }}>

@@ -35,21 +35,26 @@ import ResetPassword from './pages/ResetPassword';
 import AssessorDashboard from './pages/AssessorDashboard';
 import AssessorClientView from './pages/AssessorClientView';
 
+import Landing from './pages/Landing';
+
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
   
   if (loading) return <div>Cargando...</div>;
   if (!user) return <Navigate to="/login" />;
-  // Si és assessor i intenta anar a rutes d'usuari, el tornem a /assessor
 
   if (allowedRoles && !allowedRoles.includes(user.rol)) {
-    // Si és assessor i intenta anar a rutes d'usuari, el tornem a /assessor
     if (user.rol === 'ASSESSOR') return <Navigate to="/assessor" />;
-    // En qualsevol altre cas de desautorització, al dashboard principal
     return <Navigate to="/" />;
   }
   
   return children;
+};
+
+const HomeRoute = () => {
+  const { user, loading } = useAuth();
+  if (loading) return <div>Cargando...</div>;
+  return user ? <Navigate to="/dashboard" /> : <Landing />;
 };
 
 function App() {
@@ -67,12 +72,13 @@ function App() {
             }
           }} />
           <Routes>
+            <Route path="/" element={<HomeRoute />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             
-            <Route path="/" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><Dashboard /></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><Dashboard /></ProtectedRoute>} />
             
             <Route path="/invoices" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><Invoices /></ProtectedRoute>} />
             <Route path="/invoices/new" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><NewInvoice /></ProtectedRoute>} />
@@ -112,5 +118,6 @@ function App() {
     </AuthProvider>
   );
 }
+
 
 export default App;
