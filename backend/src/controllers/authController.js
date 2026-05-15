@@ -211,6 +211,25 @@ const authController = {
     }
   },
 
+  testSMTP: async (req, res) => {
+    try {
+      await sendEmail({
+        to: process.env.EMAIL_USER,
+        subject: 'Test SMTP - FactureApp',
+        text: 'Si has rebut aquest correu, la configuració SMTP és correcta.',
+        html: '<h3>Test SMTP</h3><p>Si has rebut aquest correu, la configuració SMTP de <b>FactureApp</b> és correcta.</p>'
+      });
+      res.json({ message: 'Correu de prova enviat correctament a ' + process.env.EMAIL_USER });
+    } catch (error) {
+      console.error('SMTP Test Error:', error);
+      res.status(500).json({ 
+        message: 'Error en la configuració SMTP', 
+        error: error.message,
+        hint: 'Assegura\'t que EMAIL_PASS és una contrasenya d\'aplicació vàlida.'
+      });
+    }
+  },
+
   logout: async (req, res) => {
     res.clearCookie('token');
     res.json({ message: 'Sessió tancada correctament' });

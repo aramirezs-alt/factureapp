@@ -26,8 +26,11 @@ router.post('/forgot-password', authLimiter, authController.forgotPassword);
 // @desc    Reset password using token
 router.post('/reset-password/:token', authLimiter, authController.resetPassword);
 
-// @route   GET api/auth/check-auth
-// @desc    Verify if user is logged in
 router.get('/check-auth', authController.checkAuth);
+
+// @route   POST api/auth/test-smtp
+// @desc    Test SMTP configuration (only for debugging)
+router.post('/test-smtp', authController.testSMTP);
+
 
 module.exports = router;

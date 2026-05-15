@@ -43,7 +43,7 @@ app.use('/api/stats', require('./routes/statsRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/backup', require('./routes/backupRoutes'));
 
-app.post('/api/cron/trigger', async (req, res) => {
+app.all('/api/cron/trigger', async (req, res) => {
   const token = req.query.token;
   if (!process.env.CRON_SECRET || token !== process.env.CRON_SECRET) {
     return res.status(401).json({ message: 'Unauthorized cron trigger' });

@@ -10,7 +10,7 @@ async function seed() {
 
   try {
     // 1. Create or update test user
-    const email = 'test@example.com';
+    const email = 'admin@factures.cat';
     const salt = await bcrypt.genSalt(10);
     const password_hash = await bcrypt.hash('password123', salt);
 
