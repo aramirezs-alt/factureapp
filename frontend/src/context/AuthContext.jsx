@@ -24,14 +24,16 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const response = await api.post('/auth/login', { email, password });
-    const { user } = response.data;
+    const { user, token } = response.data;
+    if (token) localStorage.setItem('token', token);
     setUser(user);
     return response.data;
   };
 
   const register = async (email, password, rol) => {
     const response = await api.post('/auth/register', { email, password, rol });
-    const { user } = response.data;
+    const { user, token } = response.data;
+    if (token) localStorage.setItem('token', token);
     setUser(user);
     return response.data;
   };
@@ -40,9 +42,11 @@ export const AuthProvider = ({ children }) => {
     try {
       await api.post('/auth/logout');
     } finally {
+      localStorage.removeItem('token');
       setUser(null);
     }
   };
+
 
   return (
     <AuthContext.Provider value={{ user, login, register, logout, loading, checkUser }}>

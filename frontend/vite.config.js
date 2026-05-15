@@ -15,7 +15,7 @@ export default defineConfig({
         theme_color: '#2563EB',
         background_color: '#F9FAFB',
         display: 'standalone',
-        orientation: 'portrait',
+        orientation: 'any',
       },
       workbox: {
         navigateFallback: '/index.html',
