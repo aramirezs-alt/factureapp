@@ -155,23 +155,38 @@ const NewInvoice = () => {
     <Layout>
       <div className="animate-fade-in">
         <form onSubmit={handleSubmit}>
-          <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+          <header style={{ 
+            display: 'flex', 
+            flexDirection: typeof window !== 'undefined' && window.innerWidth <= 768 ? 'column' : 'row',
+            justifyContent: 'space-between', 
+            alignItems: typeof window !== 'undefined' && window.innerWidth <= 768 ? 'flex-start' : 'center', 
+            marginBottom: '2rem',
+            gap: '1rem'
+          }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <button type="button" onClick={() => navigate('/invoices')} className="btn btn-ghost" style={{ padding: '8px' }}>
                 <ArrowLeft size={20} />
               </button>
               <div>
                 <h1>{duplicateId ? 'Duplicar Factura' : 'Nueva Factura'}</h1>
-                <p>{duplicateId ? 'Creando una copia de una factura anterior.' : 'Genera un nuevo documento de venta.'}</p>
+                <p>{duplicateId ? 'Creando una copia...' : 'Genera un nuevo documento.'}</p>
               </div>
             </div>
-            <button type="submit" disabled={loading} className="btn btn-primary" style={{ padding: '12px 24px' }}>
+            <button type="submit" disabled={loading} className="btn btn-primary" style={{ 
+              padding: '12px 24px',
+              width: typeof window !== 'undefined' && window.innerWidth <= 768 ? '100%' : 'auto'
+            }}>
               {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
               Guardar Factura
             </button>
           </header>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem', alignItems: 'start' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth <= 1024 ? '1fr' : '1fr 340px', 
+            gap: '2rem', 
+            alignItems: 'start' 
+          }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               <div className="card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
@@ -179,61 +194,63 @@ const NewInvoice = () => {
                   <h3>Conceptos de la Factura</h3>
                 </div>
                 
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ textAlign: 'left' }}>
-                      <th style={{ padding: '0.5rem' }} className="label">CONCEPTO / PRODUCTO</th>
-                      <th style={{ padding: '0.5rem', width: '80px' }} className="label">CANT.</th>
-                      <th style={{ padding: '0.5rem', width: '110px' }} className="label">PRECIO</th>
-                      <th style={{ padding: '0.5rem', width: '80px' }} className="label">IVA %</th>
-                      <th style={{ padding: '0.5rem', width: '100px', textAlign: 'right' }} className="label">TOTAL</th>
-                      <th style={{ width: '40px' }}></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {lines.map((line, idx) => (
-                      <tr key={idx}>
-                        <td style={{ padding: '0.5rem' }}>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            <select 
-                              className="input" 
-                              style={{ fontSize: '11px', padding: '4px 8px', height: 'auto', marginBottom: '4px', borderStyle: 'dashed' }}
-                              onChange={(e) => handleProductSelect(idx, e.target.value)}
-                              value=""
-                            >
-                              <option value="">-- Seleccionar del catálogo --</option>
-                              {products.map(p => <option key={p.id} value={p.id}>{p.nom} (€{parseFloat(p.preu_unitari).toFixed(2)})</option>)}
-                            </select>
-                            <input 
-                              className="input" 
-                              required 
-                              value={line.descripcio} 
-                              onChange={e => handleLineChange(idx, 'descripcio', e.target.value)} 
-                              placeholder="Descripción del concepto..." 
-                            />
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.5rem', verticalAlign: 'bottom' }}>
-                          <input className="input" type="number" step="0.01" required value={line.quantitat} onChange={e => handleLineChange(idx, 'quantitat', e.target.value)} />
-                        </td>
-                        <td style={{ padding: '0.5rem', verticalAlign: 'bottom' }}>
-                          <input className="input" type="number" step="0.01" required value={line.preu_unitari} onChange={e => handleLineChange(idx, 'preu_unitari', e.target.value)} />
-                        </td>
-                        <td style={{ padding: '0.5rem', verticalAlign: 'bottom' }}>
-                          <input className="input" type="number" required value={line.tipus_iva} onChange={e => handleLineChange(idx, 'tipus_iva', e.target.value)} />
-                        </td>
-                        <td style={{ padding: '0.5rem', textAlign: 'right', fontWeight: '700', verticalAlign: 'bottom', paddingBottom: '15px' }}>
-                          €{line.total_linia.toFixed(2)}
-                        </td>
-                        <td style={{ padding: '0.5rem', textAlign: 'center', verticalAlign: 'bottom', paddingBottom: '10px' }}>
-                          <button type="button" onClick={() => removeLine(idx)} style={{ color: 'var(--danger)', background: 'none', border: 'none', cursor: 'pointer' }}>
-                            <Trash2 size={18} />
-                          </button>
-                        </td>
+                <div className="table-container" style={{ border: 'none' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
+                    <thead>
+                      <tr style={{ textAlign: 'left' }}>
+                        <th style={{ padding: '0.5rem' }} className="label">CONCEPTO / PRODUCTO</th>
+                        <th style={{ padding: '0.5rem', width: '80px' }} className="label">CANT.</th>
+                        <th style={{ padding: '0.5rem', width: '110px' }} className="label">PRECIO</th>
+                        <th style={{ padding: '0.5rem', width: '80px' }} className="label">IVA %</th>
+                        <th style={{ padding: '0.5rem', width: '100px', textAlign: 'right' }} className="label">TOTAL</th>
+                        <th style={{ width: '40px' }}></th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {lines.map((line, idx) => (
+                        <tr key={idx}>
+                          <td style={{ padding: '0.5rem' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <select 
+                                className="input" 
+                                style={{ fontSize: '11px', padding: '4px 8px', height: 'auto', marginBottom: '4px', borderStyle: 'dashed' }}
+                                onChange={(e) => handleProductSelect(idx, e.target.value)}
+                                value=""
+                              >
+                                <option value="">-- Seleccionar --</option>
+                                {products.map(p => <option key={p.id} value={p.id}>{p.nom} (€{parseFloat(p.preu_unitari).toFixed(2)})</option>)}
+                              </select>
+                              <input 
+                                className="input" 
+                                required 
+                                value={line.descripcio} 
+                                onChange={e => handleLineChange(idx, 'descripcio', e.target.value)} 
+                                placeholder="Descripción..." 
+                              />
+                            </div>
+                          </td>
+                          <td style={{ padding: '0.5rem', verticalAlign: 'bottom' }}>
+                            <input className="input" type="number" step="0.01" required value={line.quantitat} onChange={e => handleLineChange(idx, 'quantitat', e.target.value)} />
+                          </td>
+                          <td style={{ padding: '0.5rem', verticalAlign: 'bottom' }}>
+                            <input className="input" type="number" step="0.01" required value={line.preu_unitari} onChange={e => handleLineChange(idx, 'preu_unitari', e.target.value)} />
+                          </td>
+                          <td style={{ padding: '0.5rem', verticalAlign: 'bottom' }}>
+                            <input className="input" type="number" required value={line.tipus_iva} onChange={e => handleLineChange(idx, 'tipus_iva', e.target.value)} />
+                          </td>
+                          <td style={{ padding: '0.5rem', textAlign: 'right', fontWeight: '700', verticalAlign: 'bottom', paddingBottom: '15px' }}>
+                            €{line.total_linia.toFixed(2)}
+                          </td>
+                          <td style={{ padding: '0.5rem', textAlign: 'center', verticalAlign: 'bottom', paddingBottom: '10px' }}>
+                            <button type="button" onClick={() => removeLine(idx)} style={{ color: 'var(--danger)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                              <Trash2 size={18} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
 
                 <button type="button" onClick={addLine} className="btn btn-secondary" style={{ marginTop: '1.5rem', width: '100%' }}>
                   <Plus size={18} />
@@ -246,7 +263,7 @@ const NewInvoice = () => {
                 <textarea 
                   className="input" 
                   style={{ marginTop: '1rem', minHeight: '100px', resize: 'vertical' }} 
-                  placeholder="Información adicional para el cliente..."
+                  placeholder="Información adicional..."
                   value={invoice.notes}
                   onChange={e => setInvoice({...invoice, notes: e.target.value})}
                 />
@@ -294,7 +311,7 @@ const NewInvoice = () => {
               <div className="card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.25rem' }}>
                   <FileText size={18} color="var(--primary)" />
-                  <h3 style={{ fontSize: '16px' }}>Estado de la Factura</h3>
+                  <h3 style={{ fontSize: '16px' }}>Estado</h3>
                 </div>
                 <select 
                   className="input" 
@@ -329,6 +346,7 @@ const NewInvoice = () => {
               </div>
             </div>
           </div>
+
         </form>
       </div>
     </Layout>

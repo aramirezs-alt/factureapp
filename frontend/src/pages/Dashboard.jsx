@@ -91,7 +91,14 @@ const Dashboard = () => {
     <Layout>
       <div className="animate-fade-in">
         {/* Header */}
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <header style={{ 
+          display: 'flex', 
+          flexDirection: isMobile ? 'column' : 'row',
+          justifyContent: 'space-between', 
+          alignItems: isMobile ? 'flex-start' : 'center', 
+          marginBottom: '2rem',
+          gap: '1rem'
+        }}>
           <div>
             <h1 style={{ marginBottom: '0.25rem' }}>Hola, {user?.email.split('@')[0]}</h1>
             <p>Resumen visual de la salud financiera de tu negocio.</p>
@@ -99,7 +106,10 @@ const Dashboard = () => {
           <button 
             onClick={() => navigate('/invoices/new')}
             className="btn btn-primary"
-            style={{ padding: '12px 24px' }}
+            style={{ 
+              padding: '12px 24px',
+              width: isMobile ? '100%' : 'auto'
+            }}
           >
             <Plus size={20} />
             Nueva Factura
@@ -107,7 +117,7 @@ const Dashboard = () => {
         </header>
 
         {/* Stats Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+        <div className="grid-responsive" style={{ marginBottom: '2.5rem' }}>
           {stats.map((stat, idx) => (
             <div key={idx} className="card" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
               <div style={{ 
@@ -118,33 +128,54 @@ const Dashboard = () => {
                 color: stat.color,
                 display: 'flex',
                 justifyContent: 'center',
-                alignItems: 'center'
+                alignItems: 'center',
+                flexShrink: 0
               }}>
                 {stat.icon}
               </div>
-              <div>
+              <div style={{ minWidth: 0 }}>
                 <p style={{ marginBottom: '0.1rem' }} className="label">{stat.label}</p>
-                <h2 style={{ fontSize: '1.5rem' }}>{stat.value}</h2>
+                <h2 style={{ fontSize: '1.5rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.value}</h2>
               </div>
             </div>
           ))}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '1.5rem', marginBottom: '2.5rem', alignItems: 'start' }}>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: isMobile ? '1fr' : '1fr 380px', 
+          gap: '1.5rem', 
+          marginBottom: '2.5rem', 
+          alignItems: 'start' 
+        }}>
           {/* Chart Card */}
           <div className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: isMobile ? 'column' : 'row',
+              justifyContent: 'space-between', 
+              alignItems: isMobile ? 'flex-start' : 'center', 
+              marginBottom: '1.5rem',
+              gap: '1rem'
+            }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <TrendingUp size={20} color="var(--primary)" />
-                <h2>{chartView === 'monthly' ? 'Evolución últimos 6 meses' : `Resumen Q${selectedQuarter} - ${selectedYear}`}</h2>
+                <h2 style={{ fontSize: '18px' }}>{chartView === 'monthly' ? 'Evolución' : `Q${selectedQuarter} - ${selectedYear}`}</h2>
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <div className="btn-group" style={{ display: 'flex', background: 'var(--bg-app)', padding: '4px', borderRadius: '8px' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', width: isMobile ? '100%' : 'auto' }}>
+                <div className="btn-group" style={{ 
+                  display: 'flex', 
+                  background: 'var(--bg-app)', 
+                  padding: '4px', 
+                  borderRadius: '8px',
+                  flex: 1
+                }}>
                   <button 
                     onClick={() => setChartView('monthly')}
                     style={{ 
-                      padding: '4px 12px', 
-                      fontSize: '12px', 
+                      flex: 1,
+                      padding: '4px 8px', 
+                      fontSize: '11px', 
                       borderRadius: '6px', 
                       border: 'none',
                       background: chartView === 'monthly' ? 'white' : 'transparent',
@@ -155,8 +186,9 @@ const Dashboard = () => {
                   <button 
                     onClick={() => setChartView('quarterly')}
                     style={{ 
-                      padding: '4px 12px', 
-                      fontSize: '12px', 
+                      flex: 1,
+                      padding: '4px 8px', 
+                      fontSize: '11px', 
                       borderRadius: '6px', 
                       border: 'none',
                       background: chartView === 'quarterly' ? 'white' : 'transparent',
@@ -165,57 +197,33 @@ const Dashboard = () => {
                     }}
                   >Trimestral</button>
                 </div>
-                {chartView === 'quarterly' && (
-                  <div style={{ display: 'flex', gap: '0.25rem' }}>
-                    <select 
-                      className="input" 
-                      style={{ height: '32px', padding: '0 8px', fontSize: '12px', width: '60px' }}
-                      value={selectedQuarter}
-                      onChange={(e) => setSelectedQuarter(parseInt(e.target.value))}
-                    >
-                      <option value="1">Q1</option>
-                      <option value="2">Q2</option>
-                      <option value="3">Q3</option>
-                      <option value="4">Q4</option>
-                    </select>
-                    <select 
-                      className="input" 
-                      style={{ height: '32px', padding: '0 8px', fontSize: '12px', width: '90px' }}
-                      value={selectedYear}
-                      onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                    >
-                      {availableYears.map(yr => (
-                        <option key={yr} value={yr}>{yr}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
               </div>
             </div>
-            <div style={{ width: '100%', height: 300 }}>
+            <div style={{ width: '100%', height: isMobile ? 240 : 300 }}>
               <ResponsiveContainer>
-                <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <BarChart data={chartData} margin={{ top: 10, right: 10, left: -30, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--text-secondary)' }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--text-secondary)' }} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'var(--text-secondary)' }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'var(--text-secondary)' }} />
                   <Tooltip 
                     contentStyle={{ borderRadius: '8px', border: '1px solid var(--border)', boxShadow: 'var(--shadow)' }}
                     cursor={{ fill: 'rgba(0,0,0,0.02)' }}
                   />
-                  <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ paddingBottom: '20px' }} />
-                  <Bar dataKey="Ingresos" fill="#2563EB" radius={[4, 4, 0, 0]} barSize={24} />
-                  <Bar dataKey="Gastos" fill="#EF4444" radius={[4, 4, 0, 0]} barSize={24} />
+                  <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ paddingBottom: '20px', fontSize: '11px' }} />
+                  <Bar dataKey="Ingresos" fill="#2563EB" radius={[4, 4, 0, 0]} barSize={isMobile ? 16 : 24} />
+                  <Bar dataKey="Gastos" fill="#EF4444" radius={[4, 4, 0, 0]} barSize={isMobile ? 16 : 24} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
 
           {/* Activity Column */}
-          <div className="card" style={{ padding: '0' }}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border)' }}>
+          <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
+            <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border)' }}>
               <h2>Actividad Reciente</h2>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
+
               {invoices.length === 0 ? (
                 <div style={{ padding: '3rem', textAlign: 'center', opacity: 0.5 }}>
                   <FileText size={40} style={{ marginBottom: '1rem' }} />

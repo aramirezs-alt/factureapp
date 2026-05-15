@@ -158,23 +158,39 @@ const Invoices = () => {
   return (
     <Layout>
       <div className="animate-fade-in">
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <header style={{ 
+          display: 'flex', 
+          flexDirection: typeof window !== 'undefined' && window.innerWidth <= 768 ? 'column' : 'row',
+          justifyContent: 'space-between', 
+          alignItems: typeof window !== 'undefined' && window.innerWidth <= 768 ? 'flex-start' : 'center', 
+          marginBottom: '2rem',
+          gap: '1rem'
+        }}>
           <div>
             <h1>Facturas</h1>
             <p>Historial completo de tus ventas y estados de cobro.</p>
           </div>
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <button onClick={handleExportCSV} className="btn btn-secondary" title="Exportar llistat a CSV">
-              <FileDown size={18} /> Exportar CSV
+          <div style={{ 
+            display: 'flex', 
+            gap: '0.75rem',
+            width: typeof window !== 'undefined' && window.innerWidth <= 768 ? '100%' : 'auto'
+          }}>
+            <button onClick={handleExportCSV} className="btn btn-secondary" style={{ flex: 1 }} title="Exportar llistat a CSV">
+              <FileDown size={18} /> <span style={{ display: typeof window !== 'undefined' && window.innerWidth <= 480 ? 'none' : 'inline' }}>Exportar</span> CSV
             </button>
-            <button onClick={() => navigate('/invoices/new')} className="btn btn-primary" style={{ padding: '12px 24px' }}>
+            <button onClick={() => navigate('/invoices/new')} className="btn btn-primary" style={{ flex: 1, padding: '12px 24px' }}>
               <Plus size={20} /> Crear Factura
             </button>
           </div>
         </header>
 
         {/* Search & Filter Toggle */}
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: typeof window !== 'undefined' && window.innerWidth <= 640 ? 'column' : 'row',
+          gap: '1rem', 
+          marginBottom: '1rem' 
+        }}>
           <div className="card" style={{ flex: 1, padding: '0 1rem', display: 'flex', alignItems: 'center', gap: '0.75rem', height: '44px', margin: 0 }}>
             <Search size={18} color="var(--text-secondary)" />
             <input 
@@ -183,7 +199,7 @@ const Invoices = () => {
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
-                setCurrentPage(1); // Reset to first page on search
+                setCurrentPage(1);
               }}
               style={{ background: 'none', border: 'none', color: 'var(--text-primary)', width: '100%', outline: 'none', fontSize: '14px' }}
             />
@@ -191,7 +207,7 @@ const Invoices = () => {
           <button 
             onClick={() => setShowFilters(!showFilters)} 
             className={`btn ${showFilters ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ height: '44px', padding: '0 20px' }}
+            style={{ height: '44px', padding: '0 20px', width: typeof window !== 'undefined' && window.innerWidth <= 640 ? '100%' : 'auto' }}
           >
             <Filter size={18} />
             {showFilters ? 'Ocultar Filtros' : 'Filtros'}
@@ -200,8 +216,8 @@ const Invoices = () => {
 
         {/* Advanced Filters Panel */}
         {showFilters && (
-          <div className="card animate-fade-in" style={{ marginBottom: '1.5rem', background: '#F9FAFB', border: '1px solid var(--border)' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+          <div className="card animate-fade-in" style={{ marginBottom: '1.5rem', background: 'var(--bg-app)', border: '1px solid var(--border)' }}>
+            <div className="grid-responsive" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
               <div>
                 <label className="label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px' }}>Estado</label>
                 <select className="input" value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }} style={{ height: '38px' }}>
@@ -228,7 +244,7 @@ const Invoices = () => {
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                <button onClick={clearFilters} className="btn btn-ghost" style={{ color: 'var(--danger)', fontSize: '13px', padding: '0' }}>
+                <button onClick={clearFilters} className="btn btn-ghost" style={{ color: 'var(--danger)', fontSize: '13px', padding: '0', width: '100%', justifyContent: 'flex-start' }}>
                   <X size={16} /> Limpiar filtros
                 </button>
               </div>
@@ -237,10 +253,10 @@ const Invoices = () => {
         )}
 
         {/* Table */}
-        <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div className="table-container" style={{ border: 'none' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
             <thead>
-              <tr style={{ textAlign: 'left', background: '#F9FAFB', borderBottom: '1px solid var(--border)' }}>
+              <tr style={{ textAlign: 'left', background: 'var(--bg-app)', borderBottom: '1px solid var(--border)' }}>
                 <th style={{ padding: '1rem' }} className="label">NÚMERO</th>
                 <th style={{ padding: '1rem' }} className="label">CLIENTE</th>
                 <th style={{ padding: '1rem' }} className="label">EMISIÓN</th>
@@ -263,7 +279,7 @@ const Invoices = () => {
                 invoices.map((inv) => {
                   const invoiceFullNumber = `${inv.serie}-${inv.numero_Factura}`;
                   return (
-                    <tr key={inv.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <tr key={inv.id} style={{ borderBottom: '1px solid var(--border)' }} className="table-row-hover">
                       <td style={{ padding: '1rem', fontWeight: '600' }} className="mono">{invoiceFullNumber}</td>
                       <td style={{ padding: '1rem', fontWeight: '500' }}>{inv.Client?.nom || 'Cliente desconocido'}</td>
                       <td style={{ padding: '1rem', color: 'var(--text-secondary)' }}>{new Date(inv.data_emissio).toLocaleDateString()}</td>
@@ -291,21 +307,12 @@ const Invoices = () => {
                         </select>
                       </td>
                       <td style={{ padding: '1rem', textAlign: 'right' }}>
-                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                        <div style={{ display: 'flex', gap: '0.25rem', justifyContent: 'flex-end' }}>
                           <button onClick={() => navigate(`/invoices/${inv.id}`)} title="Ver detalle" className="btn btn-ghost" style={{ padding: '6px' }}>
                             <Eye size={18} />
                           </button>
                           <button onClick={() => handleQuickSend(inv.id)} title="Enviar por Email" className="btn btn-ghost" style={{ padding: '6px', color: 'var(--primary)' }}>
                             <Mail size={18} />
-                          </button>
-                          <button 
-                            onClick={() => navigate(`/invoices/new?duplicate=${inv.id}`)} 
-                            title="Duplicar Factura" 
-                            className="btn btn-ghost" 
-                            style={{ padding: '6px', color: 'var(--secondary)' }}
-                          >
-                            <Copy size={18} />
-                            <span style={{ fontSize: '12px', marginLeft: '4px' }}>Duplicar</span>
                           </button>
                           <button onClick={() => handleDownloadPDF(inv.id, invoiceFullNumber)} title="Descargar PDF" className="btn btn-ghost" style={{ padding: '6px' }}>
                             <Download size={18} />
@@ -319,6 +326,7 @@ const Invoices = () => {
             </tbody>
           </table>
         </div>
+
 
         <Pagination 
           currentPage={currentPage} 
