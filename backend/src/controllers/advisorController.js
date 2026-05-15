@@ -81,15 +81,27 @@ const advisorController = {
   getClientInvoices: async (req, res) => {
     try {
       const { clientId } = req.params;
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
+
       const hasAccess = await checkAdvisorAccess(req.user.id, clientId);
       if (!hasAccess) return res.status(403).json({ message: 'Accés denegat' });
 
-      const invoices = await Invoice.findAll({
+      const { count, rows } = await Invoice.findAndCountAll({
         where: { usuari_id: clientId },
         include: [{ model: Client, attributes: ['nom'] }],
-        order: [['createdAt', 'DESC']]
+        order: [['data_emissio', 'DESC']],
+        limit,
+        offset
       });
-      res.json(invoices);
+
+      res.json({
+        data: rows,
+        totalItems: count,
+        totalPages: Math.ceil(count / limit),
+        currentPage: page
+      });
     } catch (error) {
       console.error('Get client invoices error:', error);
       res.status(500).json({ message: 'Error al obtenir factures' });

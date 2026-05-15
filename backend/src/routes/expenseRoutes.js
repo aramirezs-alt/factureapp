@@ -59,14 +59,32 @@ const uploadOcr = multer({
   }
 });
 
+// Helper per capturar errors de Multer
+const handleMulterError = (multerUpload) => (req, res, next) => {
+  multerUpload(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ message: 'L\'arxiu és massa gran (màxim 10MB).' });
+      }
+      return res.status(400).json({ message: `Error en la pujada: ${err.message}` });
+    } else if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    next();
+  });
+};
+
+const roleMiddleware = require('../middleware/roleMiddleware');
+
 router.use(authMiddleware);
 router.get('/export', expenseController.exportToCSV);
-router.post('/ocr-scan', uploadOcr.single('tiquet'), ocrController.scan);
-
 router.get('/', expenseController.getAll);
 router.get('/:id', expenseController.getOne);
-router.post('/', upload.single('adjunt'), expenseValidation, validate, expenseFileValidator, expenseController.create);
-router.put('/:id', upload.single('adjunt'), expenseValidation, validate, expenseFileValidator, expenseController.update);
-router.delete('/:id', expenseController.delete);
+
+// Accions de mutació i eines reservades per a USER i ADMIN
+router.post('/ocr-scan', roleMiddleware(['USER', 'ADMIN']), handleMulterError(uploadOcr.single('tiquet')), ocrController.scan);
+router.post('/', roleMiddleware(['USER', 'ADMIN']), handleMulterError(upload.single('adjunt')), expenseValidation, validate, expenseFileValidator, expenseController.create);
+router.put('/:id', roleMiddleware(['USER', 'ADMIN']), handleMulterError(upload.single('adjunt')), expenseValidation, validate, expenseFileValidator, expenseController.update);
+router.delete('/:id', roleMiddleware(['USER', 'ADMIN']), expenseController.delete);
 
 module.exports = router;

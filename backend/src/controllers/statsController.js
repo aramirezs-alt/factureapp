@@ -256,6 +256,10 @@ const statsController = {
       const userId = req.user.id;
       const year = parseInt(req.params.year) || new Date().getFullYear();
       
+      const { BusinessProfile } = require('../models');
+      const profile = await BusinessProfile.findOne({ where: { usuari_id: userId } });
+      const irpfRate = profile?.irpf_defecte || 15.0;
+      
       const startDate = new Date(year, 0, 1);
       const endDate = new Date(year, 11, 31, 23, 59, 59);
 
@@ -303,7 +307,7 @@ const statsController = {
         q.netIva = q.incomeIva - q.expenseIva;
       });
 
-      res.json(quarters);
+      res.json({ quarters, irpfRate });
     } catch (error) {
       console.error('Tax report error:', error);
       res.status(500).json({ message: 'Error calculant informe d\'impostos' });

@@ -52,6 +52,11 @@ const BusinessProfile = sequelize.define('BusinessProfile', {
     defaultValue: 21.0,
     field: 'iva_defecte',
   },
+  irpf_defecte: {
+    type: DataTypes.FLOAT,
+    defaultValue: 15.0,
+    field: 'irpf_defecte',
+  },
   serie_defecte: {
     type: DataTypes.STRING,
     allowNull: true,

@@ -10,7 +10,7 @@ const Profile = () => {
   const [profile, setProfile] = useState({
     nom: '', cognoms: '', nom_negoci: '', nif_cif: '',
     telefon: '', pais: 'España', adreca: '', ciutat: '',
-    codi_postal: '', iva_defecte: 21, logo_url: '', serie_defecte: `F${new Date().getFullYear()}`
+    codi_postal: '', iva_defecte: 21, irpf_defecte: 15, logo_url: '', serie_defecte: `F${new Date().getFullYear()}`
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -46,7 +46,7 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    const toastId = toast.loading('Guardando cambios...');
+    const toastId = toast.loading('Guardant canvis...');
 
     const formData = new FormData();
     Object.keys(profile).forEach(key => {
@@ -64,9 +64,9 @@ const Profile = () => {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setProfile(response.data.profile);
-      toast.success('Perfil actualizado correctamente', { id: toastId });
+      toast.success('Perfil actualitzat correctament', { id: toastId });
     } catch (err) {
-      toast.error('Error al actualizar el perfil', { id: toastId });
+      toast.error('Error en actualitzar el perfil', { id: toastId });
     } finally {
       setSaving(false);
     }
@@ -117,7 +117,7 @@ const Profile = () => {
     }
   };
 
-  if (loading) return <Layout><p>Cargando perfil...</p></Layout>;
+  if (loading) return <Layout><p>Carregant perfil...</p></Layout>;
 
   return (
     <Layout>
@@ -125,11 +125,11 @@ const Profile = () => {
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
           <div>
             <h1>Perfil de Negocio</h1>
-            <p>Configura tus datos fiscales y la imagen de tu marca.</p>
+            <p>Configura les teves dades fiscals i la imatge de la teva marca.</p>
           </div>
           <button onClick={handleBackup} className="btn btn-secondary">
             <Download size={18} />
-            Copia de Seguridad
+            Còpia de Seguretat
           </button>
         </header>
 
@@ -189,7 +189,7 @@ const Profile = () => {
             <div>
               <h3 style={{ fontSize: '18px', marginBottom: '0.5rem' }}>Logo del Negocio</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '14px', maxWidth: '400px' }}>
-                Esta imagen aparecerá en la cabecera de tus facturas generadas en PDF. Se recomienda un fondo transparente.
+                Aquesta imatge apareixerà a la capçalera de les teves factures generades en PDF. Es recomana un fons transparent.
               </p>
               {logoFile && (
                 <button 
@@ -211,7 +211,7 @@ const Profile = () => {
               </div>
               
               <div style={{ gridColumn: 'span 2' }}>
-                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Nombre del Negocio / Autónomo</label>
+                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Nom del Negoci / Autònom</label>
                 <input type="text" className="input" value={profile.nom_negoci || ''} onChange={(e) => setProfile({...profile, nom_negoci: e.target.value})} />
               </div>
               <div>
@@ -229,11 +229,11 @@ const Profile = () => {
               </div>
               
               <div>
-                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Nombre</label>
+                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Nom</label>
                 <input type="text" className="input" value={profile.nom || ''} onChange={(e) => setProfile({...profile, nom: e.target.value})} />
               </div>
               <div>
-                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Apellidos</label>
+                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Cognoms</label>
                 <input type="text" className="input" value={profile.cognoms || ''} onChange={(e) => setProfile({...profile, cognoms: e.target.value})} />
               </div>
 
@@ -243,23 +243,27 @@ const Profile = () => {
               </div>
               
               <div style={{ gridColumn: 'span 2' }}>
-                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Calle y Número</label>
+                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Carrer i Número</label>
                 <input type="text" className="input" value={profile.adreca || ''} onChange={(e) => setProfile({...profile, adreca: e.target.value})} />
               </div>
               <div>
-                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Ciudad</label>
+                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Ciutat</label>
                 <input type="text" className="input" value={profile.ciutat || ''} onChange={(e) => setProfile({...profile, ciutat: e.target.value})} />
               </div>
               <div>
-                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Código Postal</label>
+                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Codi Postal</label>
                 <input type="text" className="input" value={profile.codi_postal || ''} onChange={(e) => setProfile({...profile, codi_postal: e.target.value})} />
               </div>
               <div>
-                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>IVA por Defecto (%)</label>
+                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>IVA per Defecte (%)</label>
                 <input type="number" className="input" value={profile.iva_defecte || 21} onChange={(e) => setProfile({...profile, iva_defecte: e.target.value})} />
               </div>
               <div>
-                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Série por Defecto</label>
+                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Retenció IRPF (%)</label>
+                <input type="number" className="input" value={profile.irpf_defecte || 15} onChange={(e) => setProfile({...profile, irpf_defecte: e.target.value})} />
+              </div>
+              <div>
+                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Sèrie per Defecte</label>
                 <input type="text" className="input" value={profile.serie_defecte || ''} onChange={(e) => setProfile({...profile, serie_defecte: e.target.value})} placeholder="Ej: F2024" />
               </div>
             </div>

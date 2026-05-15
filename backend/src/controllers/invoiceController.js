@@ -252,7 +252,11 @@ const invoiceController = {
       });
 
       const lastInvoice = await Invoice.findOne({
-        where: { usuari_id: req.user.id, serie },
+        where: { 
+          usuari_id: req.user.id, 
+          serie,
+          numero_Factura: { [Op.regexp]: '^[0-9]+$' }
+        },
         order: [[sequelize.cast(sequelize.col('numero_Factura'), 'INTEGER'), 'DESC']],
         transaction,
         lock: transaction.LOCK.UPDATE
@@ -287,15 +291,15 @@ const invoiceController = {
   update: async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
-      const { lines, client_id, ...invoiceData } = req.body;
+      const { lines, client_id, estat, ...invoiceData } = req.body; // Filtrem 'estat' per evitar canvis no autoritzats
       const invoice = await Invoice.findOne({ where: { id: req.params.id, usuari_id: req.user.id } });
       if (!invoice) {
         await transaction.rollback();
         return res.status(404).json({ message: 'Invoice not found' });
       }
-      if (['ENVIADA', 'PAGADA', 'CANCEL·LADA'].includes(invoice.estat)) {
+      if (['ENVIADA', 'PAGADA', 'VENÇUDA', 'CANCEL·LADA'].includes(invoice.estat)) {
         await transaction.rollback();
-        return res.status(400).json({ message: 'No es pot editar una factura emesa o pagada' });
+        return res.status(400).json({ message: 'No es pot editar una factura emesa, pagada o vençuda' });
       }
 
 
@@ -340,10 +344,90 @@ const invoiceController = {
     try {
       const invoice = await Invoice.findOne({ where: { id: req.params.id, usuari_id: req.user.id } });
       if (!invoice) return res.status(404).json({ message: 'Invoice not found' });
+      
+      if (invoice.estat !== 'ESBORRANY') {
+        return res.status(400).json({ message: 'Només es poden eliminar factures en estat ESBORRANY' });
+      }
+
       await invoice.destroy();
       res.json({ message: 'Invoice deleted successfully' });
     } catch (error) {
       res.status(500).json({ message: 'Error deleting invoice' });
+    }
+  },
+
+  duplicate: async (req, res) => {
+    const transaction = await sequelize.transaction();
+    try {
+      const original = await Invoice.findOne({
+        where: { id: req.params.id, usuari_id: req.user.id },
+        include: [InvoiceLine]
+      });
+
+      if (!original) {
+        await transaction.rollback();
+        return res.status(404).json({ message: 'Factura original no trobada' });
+      }
+
+      // Lock profile for sequence
+      await BusinessProfile.findOne({ 
+        where: { usuari_id: req.user.id }, 
+        transaction, 
+        lock: transaction.LOCK.UPDATE 
+      });
+
+      // Get next number for same serie
+      const lastInvoice = await Invoice.findOne({
+        where: { 
+          usuari_id: req.user.id, 
+          serie: original.serie,
+          numero_Factura: { [Op.regexp]: '^[0-9]+$' }
+        },
+        order: [[sequelize.cast(sequelize.col('numero_Factura'), 'INTEGER'), 'DESC']],
+        transaction,
+        lock: transaction.LOCK.UPDATE
+      });
+      
+      let nextNumber = 1;
+      if (lastInvoice) {
+        const lastNum = parseInt(lastInvoice.numero_Factura);
+        if (!isNaN(lastNum)) nextNumber = lastNum + 1;
+      }
+      const numero_Factura = nextNumber.toString().padStart(3, '0');
+
+      const duplicated = await Invoice.create({
+        serie: original.serie,
+        numero_Factura,
+        data_emissio: new Date(),
+        data_venciment: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
+        estat: 'ESBORRANY',
+        base_imposable: original.base_imposable,
+        total_iva: original.total_iva,
+        total: original.total,
+        client_id: original.client_id,
+        usuari_id: req.user.id,
+        notes: original.notes
+      }, { transaction });
+
+      const lines = original.InvoiceLines.map(line => ({
+        descripcio: line.descripcio,
+        quantitat: line.quantitat,
+        preu_unitari: line.preu_unitari,
+        tipus_iva: line.tipus_iva,
+        import_iva: line.import_iva,
+        total_linia: line.total_linia,
+        producte_id: line.producte_id,
+        factura_id: duplicated.id
+      }));
+
+      await InvoiceLine.bulkCreate(lines, { transaction });
+      await transaction.commit();
+
+      res.status(201).json(duplicated);
+    } catch (error) {
+      if (transaction) await transaction.rollback();
+      console.error('Duplicate error:', error);
+      res.status(500).json({ message: 'Error al duplicar la factura' });
     }
   },
 

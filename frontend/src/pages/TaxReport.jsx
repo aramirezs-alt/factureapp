@@ -9,6 +9,7 @@ const TaxReport = () => {
   const [loading, setLoading] = useState(true);
   const [year, setYear] = useState(new Date().getFullYear());
   const [availableYears, setAvailableYears] = useState([]);
+  const [irpfRate, setIrpfRate] = useState(15);
 
   useEffect(() => {
     fetchData();
@@ -24,7 +25,8 @@ const TaxReport = () => {
       }
 
       const response = await api.get(`/stats/tax-report/${year}`);
-      setQuarterlyData(response.data);
+      setQuarterlyData(response.data.quarters);
+      setIrpfRate(response.data.irpfRate || 15);
     } catch (err) {
       toast.error('Error al carregar dades fiscals');
     } finally {
@@ -38,7 +40,7 @@ const TaxReport = () => {
   const totalIncomeBase = quarterlyData.reduce((sum, q) => sum + q.incomeBase, 0);
   const totalExpenseBase = quarterlyData.reduce((sum, q) => sum + q.expenseBase, 0);
   const netProfit = totalIncomeBase - totalExpenseBase;
-  const irpfEstimate = netProfit > 0 ? netProfit * 0.20 : 0; // 20% flat estimate for self-employed
+  const irpfEstimate = netProfit > 0 ? netProfit * (irpfRate / 100) : 0;
 
   const handleExportCSV = async (quarterId) => {
     const toastId = toast.loading('Generant informe IVA...');
@@ -176,7 +178,7 @@ const TaxReport = () => {
                 Previsión IRPF
               </h3>
               <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '1rem', lineHeight: '1.5' }}>
-                Estimación basada en el rendimiento neto (Ingresos - Gastos) aplicando el tipo general del <strong style={{ color: 'var(--text-primary)' }}>20%</strong> en pagos fraccionados (Modelo 130).
+                Estimació basada en el rendiment neto (Ingresos - Gastos) aplicant el teu tipus configurat del <strong style={{ color: 'var(--text-primary)' }}>{irpfRate}%</strong> en pagaments fraccionats (Modelo 130).
               </p>
               <div style={{ 
                 padding: '0.75rem', 

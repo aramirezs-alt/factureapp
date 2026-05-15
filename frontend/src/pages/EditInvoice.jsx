@@ -4,6 +4,7 @@ import api from '../services/api';
 import Layout from '../components/Layout';
 import { Save, Plus, Trash2, ArrowLeft, Loader2, Calendar, User, FileText, Copy } from 'lucide-react';
 import toast from 'react-hot-toast';
+import SearchableSelect from '../components/SearchableSelect';
 
 const EditInvoice = () => {
   const navigate = useNavigate();
@@ -159,13 +160,21 @@ const EditInvoice = () => {
                 <p>Modifica los detalles de esta factura.</p>
               </div>
             </div>
-            <button type="submit" disabled={loading} className="btn btn-primary" style={{ padding: '12px 24px' }}>
-              {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-              Guardar Factura
-            </button>
+            {invoice.estat === 'ESBORRANY' && (
+              <button type="submit" disabled={loading} className="btn btn-primary" style={{ padding: '12px 24px' }}>
+                {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
+                Guardar Factura
+              </button>
+            )}
           </header>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem', alignItems: 'start' }}>
+          {invoice.estat !== 'ESBORRANY' && (
+            <div className="card" style={{ marginBottom: '2rem', border: '1px solid var(--warning)', background: '#FFFBEB', color: '#92400E' }}>
+              <p><strong>Atenció:</strong> Aquesta factura ja ha estat emesa o finalitzada ({invoice.estat}) i no es pot editar. Si necessites fer canvis, pots duplicar-la o emetre una factura rectificativa.</p>
+            </div>
+          )}
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem', alignItems: 'start', opacity: invoice.estat === 'ESBORRANY' ? 1 : 0.6, pointerEvents: invoice.estat === 'ESBORRANY' ? 'auto' : 'none' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               <div className="card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
@@ -189,15 +198,16 @@ const EditInvoice = () => {
                       <tr key={idx}>
                         <td style={{ padding: '0.5rem' }}>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            <select 
-                              className="input" 
-                              style={{ fontSize: '11px', padding: '4px 8px', height: 'auto', marginBottom: '4px', borderStyle: 'dashed' }}
-                              onChange={(e) => handleProductSelect(idx, e.target.value)}
+                            <SearchableSelect
+                              options={products.map(p => ({
+                                id: p.id,
+                                label: p.nom,
+                                sublabel: `€${parseFloat(p.preu_unitari).toFixed(2)}`
+                              }))}
                               value=""
-                            >
-                              <option value="">-- Seleccionar del catálogo --</option>
-                              {products.map(p => <option key={p.id} value={p.id}>{p.nom} (€{parseFloat(p.preu_unitari).toFixed(2)})</option>)}
-                            </select>
+                              onChange={(val) => handleProductSelect(idx, val)}
+                              placeholder="Cerca producte..."
+                            />
                             <input 
                               className="input" 
                               required 
@@ -253,15 +263,16 @@ const EditInvoice = () => {
                   <User size={18} color="var(--primary)" />
                   <h3 style={{ fontSize: '16px' }}>Cliente</h3>
                 </div>
-                <select 
-                  className="input" 
-                  required 
-                  value={invoice.client_id} 
-                  onChange={e => setInvoice({...invoice, client_id: e.target.value})}
-                >
-                  <option value="">Seleccionar cliente...</option>
-                  {clients.map(c => <option key={c.id} value={c.id}>{c.nom}</option>)}
-                </select>
+                <SearchableSelect
+                  options={clients.map(c => ({
+                    id: c.id,
+                    label: c.nom,
+                    sublabel: c.nif
+                  }))}
+                  value={invoice.client_id}
+                  onChange={(val) => setInvoice({...invoice, client_id: val})}
+                  placeholder="Selecciona client..."
+                />
               </div>
 
               <div className="card">
@@ -292,20 +303,14 @@ const EditInvoice = () => {
               <div className="card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.25rem' }}>
                   <FileText size={18} color="var(--primary)" />
-                  <h3 style={{ fontSize: '16px' }}>Estado de la Factura</h3>
+                  <h3 style={{ fontSize: '16px' }}>Estado Actual</h3>
                 </div>
-                <select 
-                  className="input" 
-                  required 
-                  value={invoice.estat} 
-                  onChange={e => setInvoice({...invoice, estat: e.target.value})}
-                >
-                  <option value="ESBORRANY">Esborrany</option>
-                  <option value="ENVIADA">Enviada</option>
-                  <option value="PAGADA">Pagada</option>
-                  <option value="VENÇUDA">Vençuda</option>
-                  <option value="CANCEL·LADA">Cancel·lada</option>
-                </select>
+                <div style={{ padding: '8px 12px', background: 'var(--bg-app)', borderRadius: '8px', fontSize: '14px', fontWeight: '600', color: 'var(--primary)', textAlign: 'center' }}>
+                  {invoice.estat}
+                </div>
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '8px', textAlign: 'center' }}>
+                  El estat es gestiona des del llistat de factures.
+                </p>
               </div>
 
               <div className="card" style={{ background: 'var(--bg-app)', borderStyle: 'dashed' }}>

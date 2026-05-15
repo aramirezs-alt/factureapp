@@ -5,6 +5,7 @@ import Layout from '../components/Layout';
 import { Save, ArrowLeft, FileText, Tag, Truck, Loader2, Paperclip, Trash2, MessageSquare, Info, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 import OcrScanner from '../components/OcrScanner';
+import SearchableSelect from '../components/SearchableSelect';
 
 const EditExpense = () => {
   const { id } = useParams();
@@ -311,10 +312,15 @@ const EditExpense = () => {
                   <Truck size={20} />
                   <h3>Proveïdor</h3>
                 </div>
-                <select className="input" value={expense.proveidor_id} onChange={e => setExpense({...expense, proveidor_id: e.target.value})}>
-                  <option value="">Seleccionar proveïdor...</option>
-                  {providers.map(p => <option key={p.id} value={p.id}>{p.nom}</option>)}
-                </select>
+                <SearchableSelect
+                  options={providers.map(p => ({
+                    id: p.id,
+                    label: p.nom
+                  }))}
+                  value={expense.proveidor_id}
+                  onChange={(val) => setExpense({...expense, proveidor_id: val})}
+                  placeholder="Selecciona proveïdor..."
+                />
               </div>
 
               <div className="card">

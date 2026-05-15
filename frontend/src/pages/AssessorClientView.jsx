@@ -24,19 +24,22 @@ const AssessorClientView = () => {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     fetchData();
-  }, [clientId]);
+  }, [clientId, currentPage]);
 
   const fetchData = async () => {
     try {
       const [resSummary, resInvoices] = await Promise.all([
         api.get(`/advisors/client/${clientId}/summary`),
-        api.get(`/advisors/client/${clientId}/invoices`)
+        api.get(`/advisors/client/${clientId}/invoices?page=${currentPage}&limit=10`)
       ]);
       setSummary(resSummary.data);
-      setInvoices(resInvoices.data);
+      setInvoices(resInvoices.data.data);
+      setTotalPages(resInvoices.data.totalPages);
     } catch (err) {
       if (err.response?.status === 403) {
         toast.error('No tens accés a aquest client');
@@ -220,6 +223,29 @@ const AssessorClientView = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Paginació */}
+        {totalPages > 1 && (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '2rem' }}>
+            <button 
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => prev - 1)}
+              className="btn btn-secondary"
+            >
+              Anterior
+            </button>
+            <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
+              Pàgina <strong>{currentPage}</strong> de {totalPages}
+            </span>
+            <button 
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(prev => prev + 1)}
+              className="btn btn-secondary"
+            >
+              Següent
+            </button>
+          </div>
+        )}
       </div>
     </Layout>
   );

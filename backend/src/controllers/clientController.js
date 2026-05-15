@@ -127,75 +127,91 @@ const clientController = {
     if (!req.file) return res.status(400).json({ message: 'No s\'ha proporcionat cap fitxer CSV.' });
 
     const results = [];
-    const errors  = [];
-    let rowIndex  = 1; // header is row 0
+    let rowIndex  = 1; 
 
-    const fileContent = fs.readFileSync(req.file.path, 'utf-8');
-    const readable = stream.Readable.from(fileContent);
+    try {
+      const fileContent = fs.readFileSync(req.file.path, 'utf-8');
+      const readable = stream.Readable.from(fileContent);
 
-    await new Promise((resolve) => {
-      readable
-        .pipe(csv({ separator: ';' }))
-        .on('data', (row) => results.push({ ...row, _row: rowIndex++ }))
-        .on('end', resolve)
-        .on('error', resolve);
-    });
+      await new Promise((resolve, reject) => {
+        readable
+          .pipe(csv({ separator: ';' }))
+          .on('data', (row) => results.push({ ...row, _row: rowIndex++ }))
+          .on('end', resolve)
+          .on('error', reject);
+      });
 
-    if (results.length === 0) {
-      fs.unlink(req.file.path, () => {});
-      return res.status(400).json({ message: 'El fitxer CSV és buit o té un format incorrecte.' });
-    }
-
-    const created = [];
-
-    for (const row of results) {
-      const { nom, email, nif, telefon, adreca, codi_postal, ciutat, pais, _row } = row;
-
-      // Basic validation
-      if (!nom || !email || !nif) {
-        errors.push({ row: _row, error: `Falta nom, email o nif`, data: row });
-        continue;
+      if (results.length === 0) {
+        fs.unlink(req.file.path, () => {});
+        return res.status(400).json({ message: 'El fitxer CSV és buit o té un format incorrecte.' });
       }
 
-      // NIF format validation (basic Spanish NIF/CIF/NIE)
-      const nifClean = String(nif).trim().toUpperCase();
-      if (!/^[A-Z0-9]{7,9}[A-Z0-9]$/i.test(nifClean)) {
-        errors.push({ row: _row, error: `NIF invàlid: ${nif}`, data: row });
-        continue;
-      }
-
-      // Skip duplicates by NIF for this user
-      const existing = await Client.findOne({ where: { nif: nifClean, usuari_id: req.user.id } });
-      if (existing) {
-        errors.push({ row: _row, error: `NIF ja existent: ${nif}`, data: row });
-        continue;
-      }
+      const transaction = await Client.sequelize.transaction();
+      const created = [];
+      const errors  = [];
 
       try {
-        const client = await Client.create({
-          nom:         String(nom).trim(),
-          email:       String(email).trim(),
-          nif:         nifClean,
-          telefon:     String(telefon || '').trim(),
-          adreca:      String(adreca || '').trim(),
-          codi_postal: String(codi_postal || '').trim(),
-          ciutat:      String(ciutat || '').trim(),
-          pais:        String(pais || 'Espanya').trim(),
-          usuari_id:   req.user.id
+        for (const row of results) {
+          const { nom, email, nif, telefon, adreca, codi_postal, ciutat, pais, _row } = row;
+
+          if (!nom || !email || !nif) {
+            errors.push({ row: _row, error: `Falta nom, email o nif`, data: row });
+            continue;
+          }
+
+          const nifClean = String(nif).trim().toUpperCase();
+          if (!/^[A-Z0-9]{7,9}[A-Z0-9]$/i.test(nifClean)) {
+            errors.push({ row: _row, error: `NIF invàlid: ${nif}`, data: row });
+            continue;
+          }
+
+          const existing = await Client.findOne({ 
+            where: { nif: nifClean, usuari_id: req.user.id },
+            transaction 
+          });
+          
+          if (existing) {
+            errors.push({ row: _row, error: `NIF ja existent: ${nif}`, data: row });
+            continue;
+          }
+
+          const client = await Client.create({
+            nom:         String(nom).trim(),
+            email:       String(email).trim(),
+            nif:         nifClean,
+            telefon:     String(telefon || '').trim(),
+            adreca:      String(adreca || '').trim(),
+            codi_postal: String(codi_postal || '').trim(),
+            ciutat:      String(ciutat || '').trim(),
+            pais:        String(pais || 'Espanya').trim(),
+            usuari_id:   req.user.id
+          }, { transaction });
+          
+          created.push(client.id);
+        }
+
+        if (errors.length > 0 && created.length === 0) {
+           await transaction.rollback();
+           return res.status(400).json({ message: 'No s\'ha pogut importar cap client.', errors });
+        }
+
+        await transaction.commit();
+        fs.unlink(req.file.path, () => {});
+
+        res.json({
+          message: `${created.length} clients importats correctament. ${errors.length} errors de validació (ignorats).`,
+          imported: created.length,
+          errors
         });
-        created.push(client.id);
       } catch (err) {
-        errors.push({ row: _row, error: err.message, data: row });
+        await transaction.rollback();
+        throw err;
       }
+    } catch (error) {
+      console.error('Import CSV error:', error);
+      if (fs.existsSync(req.file.path)) fs.unlink(req.file.path, () => {});
+      res.status(500).json({ message: 'Error crític durant la importació. S\'ha fet rollback de tota l\'operació.' });
     }
-
-    fs.unlink(req.file.path, () => {});
-
-    res.json({
-      message: `${created.length} clients importats correctament. ${errors.length} errors.`,
-      imported: created.length,
-      errors
-    });
   }
 };
 

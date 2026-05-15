@@ -26,14 +26,18 @@ const uploadCSV = multer({
   }
 });
 
+const roleMiddleware = require('../middleware/roleMiddleware');
+
 // All routes are protected
 router.use(authMiddleware);
 
 router.get('/', clientController.getAll);
 router.get('/:id', clientController.getOne);
-router.post('/import', uploadCSV.single('csv'), clientController.importFromCSV);
-router.post('/', clientController.create);
-router.put('/:id', clientController.update);
-router.delete('/:id', clientController.delete);
+
+// Accions de mutació reservades per a USER i ADMIN
+router.post('/import', roleMiddleware(['USER', 'ADMIN']), uploadCSV.single('csv'), clientController.importFromCSV);
+router.post('/', roleMiddleware(['USER', 'ADMIN']), clientController.create);
+router.put('/:id', roleMiddleware(['USER', 'ADMIN']), clientController.update);
+router.delete('/:id', roleMiddleware(['USER', 'ADMIN']), clientController.delete);
 
 module.exports = router;

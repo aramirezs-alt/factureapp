@@ -34,13 +34,29 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import AssessorDashboard from './pages/AssessorDashboard';
 import AssessorClientView from './pages/AssessorClientView';
-
 import Landing from './pages/Landing';
+
+import { Loader2 } from 'lucide-react';
+
+const LoadingScreen = () => (
+  <div style={{ 
+    height: '100vh', 
+    display: 'flex', 
+    flexDirection: 'column',
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    background: 'var(--bg-app)',
+    color: 'var(--primary)'
+  }}>
+    <Loader2 className="animate-spin" size={48} />
+    <p style={{ marginTop: '1rem', fontWeight: '600', color: 'var(--text-secondary)' }}>Carregant sessió...</p>
+  </div>
+);
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
   
-  if (loading) return <div>Cargando...</div>;
+  if (loading) return <LoadingScreen />;
   if (!user) return <Navigate to="/login" />;
 
   if (allowedRoles && !allowedRoles.includes(user.rol)) {
@@ -53,7 +69,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 const HomeRoute = () => {
   const { user, loading } = useAuth();
-  if (loading) return <div>Cargando...</div>;
+  if (loading) return <LoadingScreen />;
   return user ? <Navigate to="/dashboard" /> : <Landing />;
 };
 
@@ -90,24 +106,24 @@ function App() {
             <Route path="/clients/:id" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><ClientDetail /></ProtectedRoute>} />
             <Route path="/clients/:id/edit" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><EditClient /></ProtectedRoute>} />
             
-            <Route path="/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
-            <Route path="/products/new" element={<ProtectedRoute><NewProduct /></ProtectedRoute>} />
-            <Route path="/products/:id/edit" element={<ProtectedRoute><EditProduct /></ProtectedRoute>} />
+            <Route path="/products" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><Products /></ProtectedRoute>} />
+            <Route path="/products/new" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><NewProduct /></ProtectedRoute>} />
+            <Route path="/products/:id/edit" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><EditProduct /></ProtectedRoute>} />
             
-            <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
-            <Route path="/expenses/new" element={<ProtectedRoute><NewExpense /></ProtectedRoute>} />
-            <Route path="/expenses/:id" element={<ProtectedRoute><ExpenseDetail /></ProtectedRoute>} />
-            <Route path="/expenses/:id/edit" element={<ProtectedRoute><EditExpense /></ProtectedRoute>} />
+            <Route path="/expenses" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><Expenses /></ProtectedRoute>} />
+            <Route path="/expenses/new" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><NewExpense /></ProtectedRoute>} />
+            <Route path="/expenses/:id" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><ExpenseDetail /></ProtectedRoute>} />
+            <Route path="/expenses/:id/edit" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><EditExpense /></ProtectedRoute>} />
             
             <Route path="/providers" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><Providers /></ProtectedRoute>} />
             <Route path="/providers/new" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><NewProvider /></ProtectedRoute>} />
             <Route path="/providers/:id" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><ProviderDetail /></ProtectedRoute>} />
             <Route path="/providers/:id/edit" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><EditProvider /></ProtectedRoute>} />
             
-            <Route path="/tax-report" element={<ProtectedRoute><TaxReport /></ProtectedRoute>} />
+            <Route path="/tax-report" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><TaxReport /></ProtectedRoute>} />
             
-            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-            <Route path="/advisors" element={<ProtectedRoute><AdvisorAccess /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN', 'ASSESSOR']}><Profile /></ProtectedRoute>} />
+            <Route path="/advisors" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><AdvisorAccess /></ProtectedRoute>} />
             <Route path="/assessor" element={<ProtectedRoute allowedRoles={['ASSESSOR']}><AssessorDashboard /></ProtectedRoute>} />
             <Route path="/assessor/client/:clientId" element={<ProtectedRoute allowedRoles={['ASSESSOR']}><AssessorClientView /></ProtectedRoute>} />
             

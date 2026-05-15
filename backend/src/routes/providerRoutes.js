@@ -3,12 +3,16 @@ const router = express.Router();
 const providerController = require('../controllers/providerController');
 const authMiddleware = require('../middleware/authMiddleware');
 
+const roleMiddleware = require('../middleware/roleMiddleware');
+
 router.use(authMiddleware);
 
 router.get('/', providerController.getAll);
 router.get('/:id', providerController.getOne);
-router.post('/', providerController.create);
-router.put('/:id', providerController.update);
-router.delete('/:id', providerController.delete);
+
+// Accions de mutació reservades per a USER i ADMIN
+router.post('/', roleMiddleware(['USER', 'ADMIN']), providerController.create);
+router.put('/:id', roleMiddleware(['USER', 'ADMIN']), providerController.update);
+router.delete('/:id', roleMiddleware(['USER', 'ADMIN']), providerController.delete);
 
 module.exports = router;

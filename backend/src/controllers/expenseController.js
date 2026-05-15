@@ -79,7 +79,12 @@ const expenseController = {
 
   create: async (req, res) => {
     try {
-      const data = { ...req.body, usuari_id: req.user.id };
+      const { import_net, import_iva } = req.body;
+      const data = { 
+        ...req.body, 
+        usuari_id: req.user.id,
+        total: parseFloat((parseFloat(import_net || 0) + parseFloat(import_iva || 0)).toFixed(2))
+      };
       if (req.file) {
         data.adjunt_url = `/uploads/expenses/${req.file.filename}`;
       }
@@ -98,7 +103,16 @@ const expenseController = {
       });
       if (!expense) return res.status(404).json({ message: 'Expense not found' });
       
-      const data = { ...req.body };
+      const { import_net, import_iva, ...restBody } = req.body;
+      const data = { ...restBody };
+      
+      if (import_net !== undefined || import_iva !== undefined) {
+        const net = import_net !== undefined ? parseFloat(import_net) : parseFloat(expense.import_net);
+        const iva = import_iva !== undefined ? parseFloat(import_iva) : parseFloat(expense.import_iva);
+        data.import_net = net;
+        data.import_iva = iva;
+        data.total = parseFloat((net + iva).toFixed(2));
+      }
       
       if (req.file) {
         // Eliminar l'arxiu anterior si n'hi havia un i s'ha pujat un de nou
@@ -109,6 +123,15 @@ const expenseController = {
           }
         }
         data.adjunt_url = `/uploads/expenses/${req.file.filename}`;
+      } else if (req.body.adjunt_url === null || req.body.adjunt_url === '') {
+        // Si s'envia null o buit explícitament, esborrem l'adjunt anterior
+        if (expense.adjunt_url) {
+          const oldPath = path.join(__dirname, '..', '..', expense.adjunt_url);
+          if (fs.existsSync(oldPath)) {
+            fs.unlinkSync(oldPath);
+          }
+          data.adjunt_url = null;
+        }
       }
       
       await expense.update(data);

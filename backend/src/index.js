@@ -17,15 +17,19 @@ if (process.env.NODE_ENV !== 'test') {
 // Trust proxy for rate limiting behind Vercel/Load Balancers
 app.set('trust proxy', 1);
 
+const { standardLimiter } = require('./middleware/rateLimiter');
+
 // Middlewares
 app.use(cors({ 
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true
 }));
 app.use(cookieParser());
+app.use(express.json());
+app.use('/api', standardLimiter); // Apply to all API routes
+
 const authMiddleware = require('./middleware/authMiddleware');
 const uploadController = require('./controllers/uploadController');
-app.use(express.json());
 
 // Protected route for uploads
 app.get('/uploads/:type/:filename', authMiddleware, uploadController.getFile);

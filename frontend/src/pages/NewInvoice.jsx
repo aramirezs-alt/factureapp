@@ -4,6 +4,7 @@ import api from '../services/api';
 import Layout from '../components/Layout';
 import { Save, Plus, Trash2, ArrowLeft, Loader2, Calendar, User, FileText, Copy } from 'lucide-react';
 import toast from 'react-hot-toast';
+import SearchableSelect from '../components/SearchableSelect';
 
 const NewInvoice = () => {
   const navigate = useNavigate();
@@ -211,15 +212,16 @@ const NewInvoice = () => {
                         <tr key={idx}>
                           <td style={{ padding: '0.5rem' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                              <select 
-                                className="input" 
-                                style={{ fontSize: '11px', padding: '4px 8px', height: 'auto', marginBottom: '4px', borderStyle: 'dashed' }}
-                                onChange={(e) => handleProductSelect(idx, e.target.value)}
+                              <SearchableSelect
+                                options={products.map(p => ({
+                                  id: p.id,
+                                  label: p.nom,
+                                  sublabel: `€${parseFloat(p.preu_unitari).toFixed(2)}`
+                                }))}
                                 value=""
-                              >
-                                <option value="">-- Seleccionar --</option>
-                                {products.map(p => <option key={p.id} value={p.id}>{p.nom} (€{parseFloat(p.preu_unitari).toFixed(2)})</option>)}
-                              </select>
+                                onChange={(val) => handleProductSelect(idx, val)}
+                                placeholder="Cerca producte..."
+                              />
                               <input 
                                 className="input" 
                                 required 
@@ -276,15 +278,16 @@ const NewInvoice = () => {
                   <User size={18} color="var(--primary)" />
                   <h3 style={{ fontSize: '16px' }}>Cliente</h3>
                 </div>
-                <select 
-                  className="input" 
-                  required 
-                  value={invoice.client_id} 
-                  onChange={e => setInvoice({...invoice, client_id: e.target.value})}
-                >
-                  <option value="">Seleccionar cliente...</option>
-                  {clients.map(c => <option key={c.id} value={c.id}>{c.nom}</option>)}
-                </select>
+                <SearchableSelect
+                  options={clients.map(c => ({
+                    id: c.id,
+                    label: c.nom,
+                    sublabel: c.nif
+                  }))}
+                  value={invoice.client_id}
+                  onChange={(val) => setInvoice({...invoice, client_id: val})}
+                  placeholder="Selecciona client..."
+                />
               </div>
 
               <div className="card">

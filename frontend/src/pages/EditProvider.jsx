@@ -21,7 +21,7 @@ const EditProvider = () => {
         const response = await api.get(`/providers/${id}`);
         setProvider(response.data);
       } catch (err) {
-        toast.error('Error al cargar el proveedor');
+        toast.error('Error en carregar el proveïdor');
         navigate('/providers');
       } finally {
         setLoading(false);
@@ -33,19 +33,19 @@ const EditProvider = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    const toastId = toast.loading('Actualizando proveedor...');
+    const toastId = toast.loading('Actualitzant proveïdor...');
     try {
       await api.put(`/providers/${id}`, provider);
-      toast.success('Proveedor actualizado correctamente', { id: toastId });
+      toast.success('Proveïdor actualitzat correctament', { id: toastId });
       navigate('/providers');
     } catch (err) {
-      toast.error('Error al actualizar el proveedor', { id: toastId });
+      toast.error('Error en actualitzar el proveïdor', { id: toastId });
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return <Layout><p>Cargando...</p></Layout>;
+  if (loading) return <Layout><p>Carregant...</p></Layout>;
 
   return (
     <Layout>
@@ -57,13 +57,13 @@ const EditProvider = () => {
                 <ArrowLeft size={20} />
               </button>
               <div>
-                <h1>Editar Proveedor</h1>
-                <p>Actualiza los datos de tu contacto.</p>
+                <h1>Editar Proveïdor</h1>
+                <p>Actualitza les dades del teu contacte.</p>
               </div>
             </div>
             <button type="submit" disabled={saving} className="btn btn-primary" style={{ padding: '12px 24px' }}>
               {saving ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-              Guardar Cambios
+              Guardar Canvis
             </button>
           </header>
 
@@ -71,12 +71,12 @@ const EditProvider = () => {
             <div className="card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--primary)', marginBottom: '1.5rem' }}>
                 <Building size={20} />
-                <h3>Datos del Proveedor</h3>
+                <h3>Dades del Proveïdor</h3>
               </div>
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                 <div style={{ gridColumn: 'span 2' }}>
-                  <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Nombre / Razón Social</label>
+                  <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Nom / Raó Social</label>
                   <input required className="input" type="text" value={provider.nom} onChange={e => setProvider({...provider, nom: e.target.value})} />
                 </div>
                 <div>
@@ -84,7 +84,7 @@ const EditProvider = () => {
                   <input required className="input" type="text" value={provider.nif} onChange={e => setProvider({...provider, nif: e.target.value})} />
                 </div>
                 <div>
-                  <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Teléfono</label>
+                  <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Telèfon</label>
                   <input required className="input" type="text" value={provider.telefon} onChange={e => setProvider({...provider, telefon: e.target.value})} />
                 </div>
                 <div style={{ gridColumn: 'span 2' }}>
@@ -92,7 +92,7 @@ const EditProvider = () => {
                   <input required className="input" type="email" value={provider.email} onChange={e => setProvider({...provider, email: e.target.value})} />
                 </div>
                 <div style={{ gridColumn: 'span 2' }}>
-                  <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Dirección</label>
+                  <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Adreça</label>
                   <input required className="input" type="text" value={provider.adreca} onChange={e => setProvider({...provider, adreca: e.target.value})} />
                 </div>
               </div>
@@ -101,17 +101,17 @@ const EditProvider = () => {
             <div className="card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--primary)', marginBottom: '1.5rem' }}>
                 <Tag size={20} />
-                <h3>Categorización</h3>
+                <h3>Categorització</h3>
               </div>
               <div>
-                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Tipo de Servicio</label>
+                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Tipus de Servei</label>
                 <select className="input" value={provider.categoria} onChange={e => setProvider({...provider, categoria: e.target.value})}>
-                  <option value="Suministros">Suministros (Luz, Agua, Gas)</option>
-                  <option value="Telecomunicaciones">Telecomunicaciones</option>
-                  <option value="Alquiler">Alquiler / Inmuebles</option>
-                  <option value="Software">Software y SaaS</option>
-                  <option value="Marketing">Marketing y Publicidad</option>
-                  <option value="Otros">Otros</option>
+                  <option value="Suministros">Subministraments (Llum, Aigua, Gas)</option>
+                  <option value="Telecomunicaciones">Telecomunicacions</option>
+                  <option value="Alquiler">Lloguer / Immobles</option>
+                  <option value="Software">Programari i SaaS</option>
+                  <option value="Marketing">Màrqueting i Publicitat</option>
+                  <option value="Otros">Altres</option>
                 </select>
               </div>
             </div>

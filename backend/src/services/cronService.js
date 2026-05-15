@@ -5,20 +5,43 @@ const { Op } = require('sequelize');
 const runOverdueInvoicesCheck = async () => {
   console.log('Running job: Checking for overdue invoices...');
   try {
+    const { Notification } = require('../models');
     const today = new Date();
-    const [updatedCount] = await Invoice.update(
-      { estat: 'VENÇUDA' },
-      { 
-        where: { 
-          estat: 'ENVIADA',
-          data_venciment: { [Op.lt]: today }
-        } 
+    
+    // Find invoices that are about to become overdue
+    const overdueInvoices = await Invoice.findAll({
+      where: {
+        estat: 'ENVIADA',
+        data_venciment: { [Op.lt]: today }
       }
-    );
-    if (updatedCount > 0) {
-      console.log(`Job finished: ${updatedCount} invoices marked as VENÇUDA.`);
+    });
+
+    if (overdueInvoices.length > 0) {
+      // Update them
+      await Invoice.update(
+        { estat: 'VENÇUDA' },
+        { 
+          where: { 
+            id: { [Op.in]: overdueInvoices.map(i => i.id) }
+          } 
+        }
+      );
+
+      // Create notifications
+      for (const invoice of overdueInvoices) {
+        await Notification.create({
+          titol: 'Factura vençuda',
+          missatge: `La factura ${invoice.numero_Factura} per import de ${invoice.total}€ ha vençut.`,
+          usuari_id: invoice.usuari_id,
+          tipus: 'DANGER',
+          link: `/invoices/${invoice.id}`
+        });
+      }
+      
+      console.log(`Job finished: ${overdueInvoices.length} invoices marked as VENÇUDA and notified.`);
     }
-    return updatedCount;
+    
+    return overdueInvoices.length;
   } catch (err) {
     console.error('Error in overdue invoices job:', err);
     throw err;
