@@ -33,7 +33,7 @@ const NewExpense = () => {
     const fetchData = async () => {
       try {
         const response = await api.get('/providers', { params: { limit: 'all' } });
-        setProviders(response.data.data);
+        setProviders(response.data.data || response.data || []);
 
         if (duplicateId) {
           const resExp = await api.get(`/expenses/${duplicateId}`);
@@ -165,8 +165,8 @@ const NewExpense = () => {
     <Layout>
       <div className="animate-fade-in">
         <form onSubmit={handleSubmit}>
-          <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div className="flex items-center gap-4">
               <button type="button" onClick={() => navigate('/expenses')} className="btn btn-ghost" style={{ padding: '8px' }}>
                 <ArrowLeft size={20} />
               </button>
@@ -175,13 +175,13 @@ const NewExpense = () => {
                 <p>Introdueix els detalls de la teva compra o factura de proveïdor.</p>
               </div>
             </div>
-            <button type="submit" disabled={loading} className="btn btn-danger" style={{ padding: '12px 24px' }}>
+            <button type="submit" disabled={loading} className="btn btn-danger w-full md:w-auto" style={{ padding: '12px 24px' }}>
               {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
               Confirmar Despesa
             </button>
           </header>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem', alignItems: 'start' }}>
+          <div className="form-grid">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div className="card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--danger)', marginBottom: '1.5rem' }}>
@@ -195,7 +195,7 @@ const NewExpense = () => {
                     <input required className="input" type="text" value={expense.descripcio} onChange={e => setExpense({...expense, descripcio: e.target.value})} placeholder="Ex: Compra material oficina" />
                   </div>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Base Imposable (€)</label>
                       <input required className="input" type="number" step="0.01" value={expense.base_imposable} onChange={e => handleBaseChange(e.target.value)} />

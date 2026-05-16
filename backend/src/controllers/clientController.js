@@ -10,8 +10,8 @@ const clientController = {
     try {
       const { q } = req.query;
       const page = parseInt(req.query.page) || 1;
-      const limit = req.query.limit === 'all' ? null : (parseInt(req.query.limit) || 10);
-      const offset = limit ? (page - 1) * limit : null;
+      const limit = req.query.limit === 'all' ? undefined : (parseInt(req.query.limit) || 10);
+      const offset = limit ? (page - 1) * limit : undefined;
       const where = { usuari_id: req.user.id };
       
       if (q) {

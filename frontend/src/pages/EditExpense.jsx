@@ -35,7 +35,7 @@ const EditExpense = () => {
           api.get('/providers'),
           api.get(`/expenses/${id}`)
         ]);
-        setProviders(resProviders.data.data);
+        setProviders(resProviders.data.data || resProviders.data || []);
         const data = resExpense.data;
         setExpense({
           ...data,
@@ -191,8 +191,8 @@ const EditExpense = () => {
     <Layout>
       <div className="animate-fade-in">
         <form onSubmit={handleSubmit}>
-          <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div className="flex items-center gap-4">
               <button type="button" onClick={() => navigate('/expenses')} className="btn btn-ghost" style={{ padding: '8px' }}>
                 <ArrowLeft size={20} />
               </button>
@@ -201,18 +201,18 @@ const EditExpense = () => {
                 <p>Modifica els detalls o afegeix el tiquet de compra.</p>
               </div>
             </div>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button type="button" onClick={handleDelete} className="btn btn-ghost" style={{ color: 'var(--danger)' }}>
+            <div className="flex gap-4 w-full md:w-auto">
+              <button type="button" onClick={handleDelete} className="btn btn-ghost flex-1 md:flex-none" style={{ color: 'var(--danger)' }}>
                 <Trash2 size={20} />
               </button>
-              <button type="submit" disabled={saving} className="btn btn-danger" style={{ padding: '12px 24px' }}>
+              <button type="submit" disabled={saving} className="btn btn-danger flex-1 md:flex-none" style={{ padding: '12px 24px' }}>
                 {saving ? <Loader2 className="animate-spin" /> : <Save size={20} />}
                 Guardar Canvis
               </button>
             </div>
           </header>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem', alignItems: 'start' }}>
+          <div className="form-grid">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div className="card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--danger)', marginBottom: '1.5rem' }}>
@@ -226,7 +226,7 @@ const EditExpense = () => {
                     <input required className="input" type="text" value={expense.descripcio} onChange={e => setExpense({...expense, descripcio: e.target.value})} />
                   </div>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="label">Base Imposable (€)</label>
                       <input required className="input" type="number" step="0.01" value={expense.base_imposable} onChange={e => handleBaseChange(e.target.value)} />

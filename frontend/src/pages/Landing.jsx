@@ -314,7 +314,8 @@ const Landing = () => {
           border-radius: 12px;
           text-decoration: none;
           font-weight: 700;
-          transition: transform 0.3s;
+          transition: all 0.3s;
+          white-space: nowrap;
         }
 
         .cta-button-nav:hover { transform: scale(1.05); }
@@ -546,11 +547,36 @@ const Landing = () => {
           h1 { font-size: 3rem; }
           .hero-section .container { grid-template-columns: 1fr; text-align: center; }
           .hero-content { display: flex; flex-direction: column; align-items: center; }
-          .cta-group { justify-content: center; }
-          .trust-badges { justify-content: center; }
+          .cta-group { justify-content: center; flex-wrap: wrap; }
+          .trust-badges { justify-content: center; flex-wrap: wrap; gap: 1rem; }
           .hero-visual { display: none; }
           .huge-price { font-size: 6rem; }
           .pricing-card { padding: 3rem 1.5rem; }
+        }
+
+        @media (max-width: 768px) {
+          .navbar { padding: 1rem 0; }
+          .brand span { font-size: 1.25rem; }
+          .login-link { margin-right: 1rem; font-size: 0.9rem; }
+          .cta-button-nav { padding: 0.5rem 1rem; font-size: 0.9rem; }
+          
+          h1 { font-size: 2.5rem; }
+          .description { font-size: 1.1rem; }
+          
+          .primary-cta, .secondary-cta { 
+            width: 100%; 
+            justify-content: center; 
+            padding: 1rem;
+          }
+          
+          .features-grid { grid-template-columns: 1fr; }
+          .feature-card { padding: 2rem; }
+          
+          .huge-price { font-size: 5rem; }
+          .feature-list { flex-direction: column; align-items: center; gap: 1rem; }
+          
+          .footer-content { flex-direction: column; gap: 2rem; text-align: center; }
+          .footer-links { justify-content: center; }
         }
       `}</style>
     </div>

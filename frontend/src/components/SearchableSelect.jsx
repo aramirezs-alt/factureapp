@@ -25,9 +25,12 @@ const SearchableSelect = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const filteredOptions = options.filter(opt => 
-    opt.label.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredOptions = options.filter(opt => {
+    const label = (opt.label || '').toLowerCase();
+    const sublabel = (opt.sublabel || '').toLowerCase();
+    const s = search.toLowerCase();
+    return label.includes(s) || sublabel.includes(s);
+  });
 
   return (
     <div className="searchable-select" ref={containerRef}>
@@ -53,7 +56,11 @@ const SearchableSelect = ({
             />
           </div>
           <div className="searchable-select-options">
-            {filteredOptions.length > 0 ? (
+            {options.length === 0 ? (
+              <div className="searchable-select-no-results">
+                No hi ha opcions disponibles
+              </div>
+            ) : filteredOptions.length > 0 ? (
               filteredOptions.map((opt) => (
                 <div
                   key={opt.id}

@@ -38,8 +38,10 @@ const NewInvoice = () => {
           api.get('/products', { params: { limit: 'all' } }),
           api.get('/business/profile')
         ]);
-        setClients(resClients.data.data);
-        setProducts(resProducts.data.data);
+        setClients(resClients.data.data || resClients.data || []);
+        const fetchedProducts = resProducts.data.data || resProducts.data || [];
+        setProducts(Array.isArray(fetchedProducts) ? fetchedProducts : []);
+        console.log('Products fetched:', fetchedProducts);
         
         if (resProfile.data && resProfile.data.iva_defecte) {
           const iva = parseFloat(resProfile.data.iva_defecte);
@@ -156,15 +158,8 @@ const NewInvoice = () => {
     <Layout>
       <div className="animate-fade-in">
         <form onSubmit={handleSubmit}>
-          <header style={{ 
-            display: 'flex', 
-            flexDirection: typeof window !== 'undefined' && window.innerWidth <= 768 ? 'column' : 'row',
-            justifyContent: 'space-between', 
-            alignItems: typeof window !== 'undefined' && window.innerWidth <= 768 ? 'flex-start' : 'center', 
-            marginBottom: '2rem',
-            gap: '1rem'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div className="flex items-center gap-4">
               <button type="button" onClick={() => navigate('/invoices')} className="btn btn-ghost" style={{ padding: '8px' }}>
                 <ArrowLeft size={20} />
               </button>
@@ -173,30 +168,22 @@ const NewInvoice = () => {
                 <p>{duplicateId ? 'Creando una copia...' : 'Genera un nuevo documento.'}</p>
               </div>
             </div>
-            <button type="submit" disabled={loading} className="btn btn-primary" style={{ 
-              padding: '12px 24px',
-              width: typeof window !== 'undefined' && window.innerWidth <= 768 ? '100%' : 'auto'
-            }}>
+            <button type="submit" disabled={loading} className="btn btn-primary w-full md:w-auto" style={{ padding: '12px 24px' }}>
               {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
               Guardar Factura
             </button>
           </header>
 
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth <= 1024 ? '1fr' : '1fr 340px', 
-            gap: '2rem', 
-            alignItems: 'start' 
-          }}>
+          <div className="form-grid">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-              <div className="card">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
-                  <FileText size={20} color="var(--primary)" />
-                  <h3>Conceptos de la Factura</h3>
-                </div>
-                
-                <div className="table-container" style={{ border: 'none' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
+          <div className="card" style={{ minHeight: '500px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
+              <FileText size={20} color="var(--primary)" />
+              <h3>Conceptos de la Factura ({products.length} productos cargados)</h3>
+            </div>
+            
+            <div className="table-responsive" style={{ border: 'none', overflow: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '150px' }}>
                     <thead>
                       <tr style={{ textAlign: 'left' }}>
                         <th style={{ padding: '0.5rem' }} className="label">CONCEPTO / PRODUCTO</th>

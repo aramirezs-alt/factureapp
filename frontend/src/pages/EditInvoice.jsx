@@ -36,8 +36,8 @@ const EditInvoice = () => {
           api.get('/products', { params: { limit: 'all' } }),
           api.get('/business/profile')
         ]);
-        setClients(resClients.data.data);
-        setProducts(resProducts.data.data);
+        setClients(resClients.data.data || resClients.data || []);
+        setProducts(resProducts.data.data || resProducts.data || []);
         
         if (resProfile.data && resProfile.data.iva_defecte) {
           setDefaultIva(parseFloat(resProfile.data.iva_defecte));
@@ -150,8 +150,8 @@ const EditInvoice = () => {
     <Layout>
       <div className="animate-fade-in">
         <form onSubmit={handleSubmit}>
-          <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div className="flex items-center gap-4">
               <button type="button" onClick={() => navigate('/invoices')} className="btn btn-ghost" style={{ padding: '8px' }}>
                 <ArrowLeft size={20} />
               </button>
@@ -161,7 +161,7 @@ const EditInvoice = () => {
               </div>
             </div>
             {invoice.estat === 'ESBORRANY' && (
-              <button type="submit" disabled={loading} className="btn btn-primary" style={{ padding: '12px 24px' }}>
+              <button type="submit" disabled={loading} className="btn btn-primary w-full md:w-auto" style={{ padding: '12px 24px' }}>
                 {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
                 Guardar Factura
               </button>
@@ -174,15 +174,16 @@ const EditInvoice = () => {
             </div>
           )}
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem', alignItems: 'start', opacity: invoice.estat === 'ESBORRANY' ? 1 : 0.6, pointerEvents: invoice.estat === 'ESBORRANY' ? 'auto' : 'none' }}>
+          <div className="form-grid" style={{ opacity: invoice.estat === 'ESBORRANY' ? 1 : 0.6, pointerEvents: invoice.estat === 'ESBORRANY' ? 'auto' : 'none' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-              <div className="card">
+              <div className="card" style={{ minHeight: '500px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
                   <FileText size={20} color="var(--primary)" />
-                  <h3>Conceptos de la Factura</h3>
+                  <h3>Conceptos de la Factura ({products.length} productos cargados)</h3>
                 </div>
                 
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <div className="table-responsive" style={{ overflow: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '150px' }}>
                   <thead>
                     <tr style={{ textAlign: 'left' }}>
                       <th style={{ padding: '0.5rem' }} className="label">CONCEPTO / PRODUCTO</th>
@@ -238,6 +239,7 @@ const EditInvoice = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
 
                 <button type="button" onClick={addLine} className="btn btn-secondary" style={{ marginTop: '1.5rem', width: '100%' }}>
                   <Plus size={18} />
