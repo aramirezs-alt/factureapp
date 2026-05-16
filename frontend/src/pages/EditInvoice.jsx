@@ -22,6 +22,7 @@ const EditInvoice = () => {
     client_id: '',
     notes: '',
     estat: 'ESBORRANY',
+    tipus_irpf: 0,
   });
 
   const [lines, setLines] = useState([
@@ -53,7 +54,8 @@ const EditInvoice = () => {
           numero_Factura: inv.numero_Factura,
           data_emissio: inv.data_emissio ? new Date(inv.data_emissio).toISOString().split('T')[0] : prev.data_emissio,
           data_venciment: inv.data_venciment ? new Date(inv.data_venciment).toISOString().split('T')[0] : prev.data_venciment,
-          estat: inv.estat
+          estat: inv.estat,
+          tipus_irpf: parseFloat(inv.tipus_irpf) || 0
         }));
         setLines(inv.InvoiceLines.map(l => ({
           descripcio: l.descripcio,
@@ -110,11 +112,14 @@ const EditInvoice = () => {
     if (lines.length > 1) setLines(lines.filter((_, i) => i !== index));
   };
 
-  const totals = lines.reduce((acc, current) => ({
-    base: acc.base + current.subtotal,
-    iva: acc.iva + current.import_iva,
-    total: acc.total + current.total_linia
-  }), { base: 0, iva: 0, total: 0 });
+  const totals = lines.reduce((acc, current) => {
+    const base = acc.base + current.subtotal;
+    const iva = acc.iva + current.import_iva;
+    return { base, iva };
+  }, { base: 0, iva: 0 });
+
+  const totalIrpf = totals.base * (invoice.tipus_irpf / 100);
+  const totalFinal = totals.base + totals.iva - totalIrpf;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -160,12 +165,6 @@ const EditInvoice = () => {
                 <p>Modifica los detalles de esta factura.</p>
               </div>
             </div>
-            {invoice.estat === 'ESBORRANY' && (
-              <button type="submit" disabled={loading} className="btn btn-primary w-full md:w-auto" style={{ padding: '12px 24px' }}>
-                {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-                Guardar Factura
-              </button>
-            )}
           </header>
 
           {invoice.estat !== 'ESBORRANY' && (
@@ -326,11 +325,34 @@ const EditInvoice = () => {
                     <span style={{ color: 'var(--text-secondary)' }}>IVA Total</span>
                     <span>€{totals.iva.toFixed(2)}</span>
                   </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>IRPF (%)</span>
+                    <input 
+                      type="number" 
+                      className="input" 
+                      style={{ width: '80px', padding: '4px 8px', height: '32px', textAlign: 'right' }}
+                      value={invoice.tipus_irpf}
+                      onChange={e => setInvoice({ ...invoice, tipus_irpf: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
+                  {totalIrpf > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--danger)' }}>
+                      <span>Retenció IRPF</span>
+                      <span>-€{totalIrpf.toFixed(2)}</span>
+                    </div>
+                  )}
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border)', fontSize: '1.1rem', fontWeight: '700' }}>
                     <span>TOTAL</span>
-                    <span style={{ color: 'var(--primary)' }}>€{totals.total.toFixed(2)}</span>
+                    <span style={{ color: 'var(--primary)' }}>€{totalFinal.toFixed(2)}</span>
                   </div>
                 </div>
+
+                {invoice.estat === 'ESBORRANY' && (
+                  <button type="submit" disabled={loading} className="btn btn-primary w-full" style={{ padding: '12px 24px' }}>
+                    {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
+                    Guardar Factura
+                  </button>
+                )}
               </div>
             </div>
           </div>

@@ -115,6 +115,53 @@ const runRecurringExpensesCheck = async () => {
     }
 };
 
+const runTaxDeadlinesCheck = async () => {
+  console.log('Running job: Checking for tax deadlines...');
+  try {
+    const { User, Notification } = require('../models');
+    const { Op } = require('sequelize');
+    const today = new Date();
+    
+    // Spanish Tax Deadlines (Standard Quarterly)
+    // Q1: Apr 1-20, Q2: Jul 1-20, Q3: Oct 1-20, Q4: Jan 1-30
+    const deadlines = [
+      { month: 4, day: 20, name: '1er Trimestre (IVA i IRPF)', period: 'Q1' },
+      { month: 7, day: 20, name: '2on Trimestre (IVA i IRPF)', period: 'Q2' },
+      { month: 10, day: 20, name: '3er Trimestre (IVA i IRPF)', period: 'Q3' },
+      { month: 1, day: 30, name: '4rt Trimestre i Resum Anual', period: 'Q4' }
+    ];
+
+    for (const deadline of deadlines) {
+      let year = today.getFullYear();
+      // If deadline is in January (month 1) and we are in December, it's for next year
+      // But if we are in January, it's for this year.
+      const deadlineDate = new Date(year, deadline.month - 1, deadline.day);
+      
+      // Calculate diff in days
+      const diffTime = deadlineDate - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      // Notify if deadline is in 15, 7, 3 or 1 days
+      if ([15, 7, 3, 1].includes(diffDays)) {
+        const users = await User.findAll({ where: { rol: 'USER' } });
+        for (const user of users) {
+          await Notification.create({
+            titol: `Recordatori Impostos: ${deadline.name}`,
+            missatge: `Queden ${diffDays} dies per presentar la declaració del ${deadline.name}. No ho deixis per l'últim moment!`,
+            usuari_id: user.id,
+            tipus: diffDays <= 3 ? 'DANGER' : 'WARNING',
+            link: '/stats'
+          });
+        }
+      }
+    }
+    return true;
+  } catch (err) {
+    console.error('Error in tax deadlines job:', err);
+    throw err;
+  }
+};
+
 const initCronJobs = () => {
   // Run every hour
   cron.schedule('0 * * * *', async () => {
@@ -126,7 +173,8 @@ const initCronJobs = () => {
   // Run every day at 00:00 to check for recurring expenses
   cron.schedule('0 0 * * *', async () => {
     await runRecurringExpensesCheck();
+    await runTaxDeadlinesCheck();
   });
 };
 
-module.exports = { initCronJobs, runOverdueInvoicesCheck, runRecurringExpensesCheck };
+module.exports = { initCronJobs, runOverdueInvoicesCheck, runRecurringExpensesCheck, runTaxDeadlinesCheck };

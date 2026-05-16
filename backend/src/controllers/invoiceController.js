@@ -119,10 +119,17 @@ const _buildPDF = async (invoice, profile, stream) => {
   doc.fillColor(secondaryColor).text('IVA Total:', 350, summaryY + 30);
   doc.fillColor(textColor).text(`€${parseFloat(invoice.total_iva).toFixed(2)}`, 450, summaryY + 30, { align: 'right' });
 
-  doc.rect(350, summaryY + 50, 200, 35).fill(primaryColor);
+  let finalY = summaryY + 30;
+  if (parseFloat(invoice.total_irpf) > 0) {
+    finalY += 15;
+    doc.fillColor(secondaryColor).text(`IRPF (${parseFloat(invoice.tipus_irpf)}%):`, 350, finalY);
+    doc.fillColor(textColor).text(`-€${parseFloat(invoice.total_irpf).toFixed(2)}`, 450, finalY, { align: 'right' });
+  }
+
+  doc.rect(350, finalY + 20, 200, 35).fill(primaryColor);
   doc.fillColor('#ffffff').fontSize(12).font('Helvetica-Bold');
-  doc.text('TOTAL:', 365, summaryY + 62);
-  doc.text(`€${parseFloat(invoice.total).toFixed(2)}`, 450, summaryY + 62, { width: 90, align: 'right' });
+  doc.text('TOTAL:', 365, finalY + 32);
+  doc.text(`€${parseFloat(invoice.total).toFixed(2)}`, 450, finalY + 32, { width: 90, align: 'right' });
 
   // --- FOOTER ---
   const footerY = 750;
@@ -135,7 +142,7 @@ const _buildPDF = async (invoice, profile, stream) => {
 };
 
 // Internal helper to calculate invoice totals and process lines
-const _processInvoiceLines = (lines) => {
+const _processInvoiceLines = (lines, tipus_irpf = 0) => {
   let base_imposable = 0;
   let total_iva = 0;
   const processedLines = lines.map(line => {
@@ -154,11 +161,15 @@ const _processInvoiceLines = (lines) => {
       total_linia: parseFloat((subtotal + import_iva).toFixed(2))
     };
   });
+
+  const total_irpf = base_imposable * (parseFloat(tipus_irpf) / 100);
+
   return {
     processedLines,
     base_imposable: parseFloat(base_imposable.toFixed(2)),
     total_iva: parseFloat(total_iva.toFixed(2)),
-    total: parseFloat((base_imposable + total_iva).toFixed(2))
+    total_irpf: parseFloat(total_irpf.toFixed(2)),
+    total: parseFloat((base_imposable + total_iva - total_irpf).toFixed(2))
   };
 };
 
@@ -269,11 +280,11 @@ const invoiceController = {
       }
       const numero_Factura = nextNumber.toString().padStart(3, '0');
 
-      const { processedLines, base_imposable, total_iva, total } = _processInvoiceLines(lines);
+      const { processedLines, base_imposable, total_iva, total_irpf, total } = _processInvoiceLines(lines, tipus_irpf || 0);
 
       const invoice = await Invoice.create({
         ...invoiceData, client_id, serie, numero_Factura,
-        base_imposable, total_iva, total,
+        base_imposable, total_iva, tipus_irpf: tipus_irpf || 0, total_irpf, total,
         usuari_id: req.user.id
       }, { transaction });
 
@@ -305,10 +316,15 @@ const invoiceController = {
 
       let totalsUpdate = {};
       if (lines) {
-        const { processedLines, base_imposable, total_iva, total } = _processInvoiceLines(lines);
-        totalsUpdate = { base_imposable, total_iva, total };
+        const { processedLines, base_imposable, total_iva, total_irpf, total } = _processInvoiceLines(lines, req.body.tipus_irpf !== undefined ? req.body.tipus_irpf : invoice.tipus_irpf);
+        totalsUpdate = { base_imposable, total_iva, total_irpf, total };
+        if (req.body.tipus_irpf !== undefined) totalsUpdate.tipus_irpf = req.body.tipus_irpf;
         await InvoiceLine.destroy({ where: { factura_id: invoice.id }, transaction });
         await InvoiceLine.bulkCreate(processedLines.map(line => ({ ...line, factura_id: invoice.id })), { transaction });
+      } else if (req.body.tipus_irpf !== undefined) {
+        // Only IRPF changed
+        const { total_irpf, total } = _processInvoiceLines(lines || (await invoice.getInvoiceLines()), req.body.tipus_irpf);
+        totalsUpdate = { tipus_irpf: req.body.tipus_irpf, total_irpf, total };
       }
 
       await invoice.update({ ...invoiceData, client_id, ...totalsUpdate }, { transaction });

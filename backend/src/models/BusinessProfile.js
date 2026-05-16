@@ -57,6 +57,11 @@ const BusinessProfile = sequelize.define('BusinessProfile', {
     defaultValue: 15.0,
     field: 'irpf_defecte',
   },
+  irpf_estimat: {
+    type: DataTypes.FLOAT,
+    defaultValue: 15.0,
+    field: 'irpf_estimat',
+  },
   serie_defecte: {
     type: DataTypes.STRING,
     allowNull: true,

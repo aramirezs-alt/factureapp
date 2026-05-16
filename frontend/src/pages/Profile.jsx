@@ -10,7 +10,7 @@ const Profile = () => {
   const [profile, setProfile] = useState({
     nom: '', cognoms: '', nom_negoci: '', nif_cif: '',
     telefon: '', pais: 'España', adreca: '', ciutat: '',
-    codi_postal: '', iva_defecte: 21, irpf_defecte: 15, logo_url: '', serie_defecte: `F${new Date().getFullYear()}`
+    codi_postal: '', iva_defecte: 21, irpf_defecte: 15, irpf_estimat: 15, logo_url: '', serie_defecte: `F${new Date().getFullYear()}`
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -259,8 +259,14 @@ const Profile = () => {
                 <input type="number" className="input" value={profile.iva_defecte || 21} onChange={(e) => setProfile({...profile, iva_defecte: e.target.value})} />
               </div>
               <div>
-                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Retenció IRPF (%)</label>
-                <input type="number" className="input" value={profile.irpf_defecte || 15} onChange={(e) => setProfile({...profile, irpf_defecte: e.target.value})} />
+                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Retenció IRPF (%) (En Factures)</label>
+                <input type="number" className="input" value={profile.irpf_defecte || 0} onChange={(e) => setProfile({...profile, irpf_defecte: e.target.value})} />
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>El que apareixerà imprès a la factura.</p>
+              </div>
+              <div>
+                <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Estalvi IRPF Intern (%)</label>
+                <input type="number" className="input" value={profile.irpf_estimat || 15} onChange={(e) => setProfile({...profile, irpf_estimat: e.target.value})} />
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>Només per a càlculs interns i "Pau Mental".</p>
               </div>
               <div>
                 <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Sèrie per Defecte</label>

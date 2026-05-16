@@ -24,6 +24,7 @@ const NewInvoice = () => {
     client_id: '',
     notes: '',
     estat: 'ESBORRANY',
+    tipus_irpf: 0,
   });
 
   const [lines, setLines] = useState([
@@ -60,6 +61,7 @@ const NewInvoice = () => {
             client_id: dup.client_id,
             notes: dup.notes,
             serie: dup.serie,
+            tipus_irpf: parseFloat(dup.tipus_irpf) || 0,
           }));
           setLines(dup.InvoiceLines.map(l => ({
             descripcio: l.descripcio,
@@ -70,9 +72,14 @@ const NewInvoice = () => {
             import_iva: parseFloat(l.import_iva),
             total_linia: parseFloat(l.total_linia)
           })));
-          toast.success('Datos duplicados cargados');
-        } else if (resProfile.data && resProfile.data.serie_defecte) {
-          setInvoice(prev => ({ ...prev, serie: resProfile.data.serie_defecte }));
+          toast.success('Datos duplicados cargados', { id: 'dup-load' });
+        } else if (resProfile.data) {
+          const profile = resProfile.data;
+          setInvoice(prev => ({ 
+            ...prev, 
+            serie: profile.serie_defecte || prev.serie,
+            tipus_irpf: profile.irpf_defecte || 0
+          }));
         }
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -118,11 +125,14 @@ const NewInvoice = () => {
     if (lines.length > 1) setLines(lines.filter((_, i) => i !== index));
   };
 
-  const totals = lines.reduce((acc, current) => ({
-    base: acc.base + current.subtotal,
-    iva: acc.iva + current.import_iva,
-    total: acc.total + current.total_linia
-  }), { base: 0, iva: 0, total: 0 });
+  const totals = lines.reduce((acc, current) => {
+    const base = acc.base + current.subtotal;
+    const iva = acc.iva + current.import_iva;
+    return { base, iva };
+  }, { base: 0, iva: 0 });
+
+  const totalIrpf = totals.base * (invoice.tipus_irpf / 100);
+  const totalFinal = totals.base + totals.iva - totalIrpf;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -165,13 +175,9 @@ const NewInvoice = () => {
               </button>
               <div>
                 <h1>{duplicateId ? 'Duplicar Factura' : 'Nueva Factura'}</h1>
-                <p>{duplicateId ? 'Creando una copia...' : 'Genera un nuevo documento.'}</p>
+                <p>{duplicateId ? 'Creando una copia...': 'Genera un nuevo documento.'}</p>
               </div>
             </div>
-            <button type="submit" disabled={loading} className="btn btn-primary w-full md:w-auto" style={{ padding: '12px 24px' }}>
-              {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-              Guardar Factura
-            </button>
           </header>
 
           <div className="form-grid">
@@ -328,11 +334,32 @@ const NewInvoice = () => {
                     <span style={{ color: 'var(--text-secondary)' }}>IVA Total</span>
                     <span>€{totals.iva.toFixed(2)}</span>
                   </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>IRPF (%)</span>
+                    <input 
+                      type="number" 
+                      className="input" 
+                      style={{ width: '80px', padding: '4px 8px', height: '32px', textAlign: 'right' }}
+                      value={invoice.tipus_irpf}
+                      onChange={e => setInvoice({ ...invoice, tipus_irpf: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
+                  {totalIrpf > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--danger)' }}>
+                      <span>Retenció IRPF</span>
+                      <span>-€{totalIrpf.toFixed(2)}</span>
+                    </div>
+                  )}
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border)', fontSize: '1.1rem', fontWeight: '700' }}>
                     <span>TOTAL</span>
-                    <span style={{ color: 'var(--primary)' }}>€{totals.total.toFixed(2)}</span>
+                    <span style={{ color: 'var(--primary)' }}>€{totalFinal.toFixed(2)}</span>
                   </div>
                 </div>
+
+                <button type="submit" disabled={loading} className="btn btn-primary w-full" style={{ padding: '12px 24px' }}>
+                  {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
+                  Guardar Factura
+                </button>
               </div>
             </div>
           </div>

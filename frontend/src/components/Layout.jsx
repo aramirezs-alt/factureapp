@@ -130,7 +130,10 @@ const Layout = ({ children }) => {
           padding: '0 1rem',
           zIndex: 90
         }}>
-          <h2 style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--primary)', margin: 0 }}>FactureApp</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <img src="/favicon.svg" alt="Logo" style={{ width: '28px', height: '28px' }} />
+            <h2 style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--primary)', margin: 0 }}>FactureApp</h2>
+          </div>
           <button 
             onClick={() => setIsSidebarOpen(true)}
             className="btn btn-ghost"
@@ -170,11 +173,14 @@ const Layout = ({ children }) => {
         transform: isMobile && !isSidebarOpen ? `translateX(-${sidebarWidth}px)` : 'translateX(0)',
         visibility: isMobile && !isSidebarOpen ? 'hidden' : 'visible'
       }}>
-        <div style={{ marginBottom: '2.5rem', padding: '0 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--primary)', letterSpacing: '-0.5px', margin: 0 }}>
-            Facture<span style={{ color: 'var(--text-primary)' }}>App</span>
-          </h2>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <div style={{ marginBottom: '2.5rem', padding: '0 0.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <img src="/favicon.svg" alt="Logo" style={{ width: '36px', height: '36px' }} />
+            <h2 style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--primary)', letterSpacing: '-0.5px', margin: 0 }}>
+              Facture<span style={{ color: 'var(--text-primary)' }}>App</span>
+            </h2>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ position: 'relative' }}>
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
@@ -266,22 +272,11 @@ const Layout = ({ children }) => {
             <NavLink
               key={item.to}
               to={item.to}
+              end={item.to === '/'}
               onClick={() => isMobile && setIsSidebarOpen(false)}
-              style={({ isActive }) => ({
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                padding: '0.75rem 1rem',
-                borderRadius: 'var(--radius-btn)',
-                marginBottom: '0.25rem',
-                color: isActive ? 'var(--primary)' : 'var(--text-secondary)',
-                background: isActive ? (isDark ? 'rgba(37, 99, 235, 0.15)' : '#EFF6FF') : 'transparent',
-                fontWeight: isActive ? '600' : '500',
-                transition: 'all 0.2s ease',
-                textDecoration: 'none'
-              })}
+              className="nav-item"
             >
-              <span style={{ color: 'inherit' }}>{item.icon}</span>
+              <span>{item.icon}</span>
               <span style={{ fontSize: '14px' }}>{item.label}</span>
             </NavLink>
           ))}

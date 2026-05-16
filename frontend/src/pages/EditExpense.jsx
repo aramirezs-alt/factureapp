@@ -201,15 +201,6 @@ const EditExpense = () => {
                 <p>Modifica els detalls o afegeix el tiquet de compra.</p>
               </div>
             </div>
-            <div className="flex gap-4 w-full md:w-auto">
-              <button type="button" onClick={handleDelete} className="btn btn-ghost flex-1 md:flex-none" style={{ color: 'var(--danger)' }}>
-                <Trash2 size={20} />
-              </button>
-              <button type="submit" disabled={saving} className="btn btn-danger flex-1 md:flex-none" style={{ padding: '12px 24px' }}>
-                {saving ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-                Guardar Canvis
-              </button>
-            </div>
           </header>
 
           <div className="form-grid">
@@ -226,33 +217,33 @@ const EditExpense = () => {
                     <input required className="input" type="text" value={expense.descripcio} onChange={e => setExpense({...expense, descripcio: e.target.value})} />
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '2rem' }}>
                     <div>
-                      <label className="label">Base Imposable (€)</label>
+                      <label className="label" style={{ display: 'block', marginBottom: '8px' }}>Base Imposable (€)</label>
                       <input required className="input" type="number" step="0.01" value={expense.base_imposable} onChange={e => handleBaseChange(e.target.value)} />
                     </div>
                     <div>
-                      <label className="label">Tipus d'IVA (%)</label>
+                      <label className="label" style={{ display: 'block', marginBottom: '8px' }}>Tipus d'IVA (%)</label>
                       <input required className="input" type="number" value={expense.tipus_iva} onChange={e => handleIvaPctChange(e.target.value)} />
                     </div>
                     <div>
-                      <label className="label">Import IVA (€)</label>
-                      <input className="input" type="number" value={expense.import_iva} readOnly style={{ background: '#f9fafb', color: '#6b7280' }} />
+                      <label className="label" style={{ display: 'block', marginBottom: '8px' }}>Import IVA (€)</label>
+                      <input className="input" type="number" value={expense.import_iva} disabled style={{ background: 'var(--bg-app)', color: 'var(--text-secondary)', cursor: 'not-allowed', fontWeight: '600' }} />
                     </div>
                     <div>
-                      <label className="label">Import Total (amb IVA) (€)</label>
-                      <input required className="input" type="number" step="0.01" value={expense.total} onChange={e => handleTotalChange(e.target.value)} style={{ fontWeight: 'bold' }} />
+                      <label className="label" style={{ display: 'block', marginBottom: '8px' }}>Import Total (amb IVA) (€)</label>
+                      <input required className="input" type="number" step="0.01" value={expense.total} onChange={e => handleTotalChange(e.target.value)} style={{ fontWeight: '800', borderColor: 'var(--primary)', color: 'var(--primary)' }} />
                     </div>
 
-                    <div style={{ gridColumn: 'span 2' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px', background: '#eff6ff', borderRadius: '8px', color: '#1e40af', fontSize: '13px' }}>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px', background: '#eff6ff', borderRadius: '8px', color: '#1e40af', fontSize: '13px' }}>
                         <Info size={16} />
                         <span>Pots introduir tant la <b>Base</b> com el <b>Total</b>; l'altre camp es calcularà automàticament.</span>
                       </div>
                     </div>
 
-                    <div style={{ gridColumn: 'span 2' }}>
-                      <label className="label">Data de la Despesa</label>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label className="label" style={{ display: 'block', marginBottom: '8px' }}>Data de la Despesa</label>
                       <input required className="input" type="date" value={expense.data_despesa} onChange={e => setExpense({...expense, data_despesa: e.target.value})} />
                     </div>
                   </div>
@@ -349,6 +340,16 @@ const EditExpense = () => {
                   <option value="MENSUAL">Mensual (es repeteix cada mes)</option>
                   <option value="ANUAL">Anual (es repeteix cada any)</option>
                 </select>
+
+                <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <button type="submit" disabled={saving} className="btn btn-danger w-full" style={{ padding: '12px 24px' }}>
+                    {saving ? <Loader2 className="animate-spin" /> : <Save size={20} />}
+                    Guardar Canvis
+                  </button>
+                  <button type="button" onClick={handleDelete} className="btn btn-ghost w-full" style={{ color: 'var(--danger)', fontSize: '13px' }}>
+                    <Trash2 size={18} /> Eliminar Despesa
+                  </button>
+                </div>
               </div>
             </div>
           </div>

@@ -32,7 +32,7 @@ const authMiddleware = require('./middleware/authMiddleware');
 const uploadController = require('./controllers/uploadController');
 
 // Protected route for uploads
-app.get('/uploads/:type/:filename', authMiddleware, uploadController.getFile);
+app.get('/api/uploads/:type/:filename', authMiddleware, uploadController.getFile);
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));

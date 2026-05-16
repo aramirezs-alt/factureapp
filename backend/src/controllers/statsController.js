@@ -107,6 +107,60 @@ const statsController = {
         m.Gastos = parseFloat(m.Gastos.toFixed(2));
       });
 
+      // 4. Current Quarter Tax Summary
+      const currentQuarter = Math.floor(now.getMonth() / 3) + 1;
+      const startMonth = (currentQuarter - 1) * 3;
+      const qStartDate = new Date(now.getFullYear(), startMonth, 1);
+      
+      const qInvoices = await Invoice.findAll({
+        where: { 
+          usuari_id: userId, 
+          data_emissio: { [Op.gte]: qStartDate },
+          estat: { [Op.ne]: 'CANCEL·LADA' }
+        },
+        attributes: ['total_iva', 'total_irpf', 'base_imposable']
+      });
+      const qExpenses = await Expense.findAll({
+        where: { 
+          usuari_id: userId, 
+          data_despesa: { [Op.gte]: qStartDate }
+        },
+        attributes: ['import_iva', 'import_net']
+      });
+
+      let qIvaIngresos = 0;
+      let qIvaGastos = 0;
+      let qIrpfRetenido = 0;
+      let qBaseIngresos = 0;
+      let qBaseGastos = 0;
+
+      qInvoices.forEach(i => {
+        qIvaIngresos += parseFloat(i.total_iva) || 0;
+        qIrpfRetenido += parseFloat(i.total_irpf) || 0;
+        qBaseIngresos += parseFloat(i.base_imposable) || 0;
+      });
+      qExpenses.forEach(e => {
+        qIvaGastos += parseFloat(e.import_iva) || 0;
+        qBaseGastos += parseFloat(e.import_net) || 0;
+      });
+
+      const { BusinessProfile } = require('../models');
+      const profile = await BusinessProfile.findOne({ where: { usuari_id: userId } });
+      const irpfPersonalRate = profile?.irpf_estimat || 15.0;
+
+      const irpf20 = (qBaseIngresos - qBaseGastos) > 0 ? (qBaseIngresos - qBaseGastos) * 0.20 : 0;
+      const irpfPersonalEstimate = (qBaseIngresos - qBaseGastos) > 0 ? (qBaseIngresos - qBaseGastos) * (irpfPersonalRate / 100) : 0;
+
+      const taxSummary = {
+        quarter: currentQuarter,
+        ivaEstimate: parseFloat((qIvaIngresos - qIvaGastos).toFixed(2)),
+        irpfRetained: parseFloat(qIrpfRetenido.toFixed(2)),
+        benefit: parseFloat((qBaseIngresos - qBaseGastos).toFixed(2)),
+        irpfModel130Estimate: parseFloat(Math.max(0, irpf20 - qIrpfRetenido).toFixed(2)),
+        personalTaxSaving: parseFloat(Math.max(0, irpfPersonalEstimate - qIrpfRetenido).toFixed(2)),
+        personalRate: irpfPersonalRate
+      };
+
       // Get available years for the selector
       const oldestInvoice = await Invoice.findOne({ where: { usuari_id: userId }, order: [['data_emissio', 'ASC']] });
       const oldestExpense = await Expense.findOne({ where: { usuari_id: userId }, order: [['data_despesa', 'ASC']] });
@@ -126,7 +180,8 @@ const statsController = {
         pendingCount,
         recentInvoices,
         chartData: chartMonths,
-        availableYears
+        availableYears,
+        taxSummary
       });
     } catch (error) {
       console.error('Dashboard stats error:', error);

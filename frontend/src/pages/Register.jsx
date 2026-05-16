@@ -43,6 +43,7 @@ const Register = () => {
         boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)'
       }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <img src="/favicon.svg" alt="Logo" style={{ width: '60px', height: '60px', marginBottom: '1rem' }} />
           <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'var(--primary)', fontWeight: '800' }}>
             FactureApp
           </h1>

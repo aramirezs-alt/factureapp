@@ -417,3 +417,33 @@ td {
   color: var(--text-secondary);
   font-size: 13px;
 }
+
+/* Navigation Sidebar */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.75rem 1rem;
+  borderRadius: var(--radius-btn);
+  margin-bottom: 0.25rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  border-radius: var(--radius-btn);
+}
+
+.nav-item:hover {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+.nav-item.active {
+  color: var(--primary);
+  background-color: var(--primary-light);
+  font-weight: 700;
+}
+
+.dark .nav-item.active {
+  background-color: rgba(37, 99, 235, 0.15);
+}

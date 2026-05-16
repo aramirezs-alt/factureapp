@@ -50,7 +50,7 @@ const NewExpense = () => {
             periodicitat: data.periodicitat || 'CAP',
             notes: data.notes || ''
           });
-          toast.success('Dades de despesa copiades');
+          toast.success('Dades de despesa copiades', { id: 'dup-load-exp' });
         }
       } catch (err) {
         toast.error('Error al carregar dades');
@@ -175,10 +175,6 @@ const NewExpense = () => {
                 <p>Introdueix els detalls de la teva compra o factura de proveïdor.</p>
               </div>
             </div>
-            <button type="submit" disabled={loading} className="btn btn-danger w-full md:w-auto" style={{ padding: '12px 24px' }}>
-              {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-              Confirmar Despesa
-            </button>
           </header>
 
           <div className="form-grid">
@@ -195,33 +191,33 @@ const NewExpense = () => {
                     <input required className="input" type="text" value={expense.descripcio} onChange={e => setExpense({...expense, descripcio: e.target.value})} placeholder="Ex: Compra material oficina" />
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '2rem' }}>
                     <div>
-                      <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Base Imposable (€)</label>
-                      <input required className="input" type="number" step="0.01" value={expense.base_imposable} onChange={e => handleBaseChange(e.target.value)} />
+                      <label className="label" style={{ display: 'block', marginBottom: '8px' }}>Base Imposable (€)</label>
+                      <input required className="input" type="number" step="0.01" value={expense.base_imposable} onChange={e => handleBaseChange(e.target.value)} placeholder="0.00" />
                     </div>
                     <div>
-                      <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Tipus d'IVA (%)</label>
+                      <label className="label" style={{ display: 'block', marginBottom: '8px' }}>Tipus d'IVA (%)</label>
                       <input required className="input" type="number" value={expense.tipus_iva} onChange={e => handleIvaPctChange(e.target.value)} />
                     </div>
                     <div>
-                      <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Import IVA (€)</label>
-                      <input className="input" type="number" value={expense.import_iva} readOnly style={{ background: '#f9fafb', color: '#6b7280' }} />
+                      <label className="label" style={{ display: 'block', marginBottom: '8px' }}>Import IVA (€)</label>
+                      <input className="input" type="number" value={expense.import_iva} disabled style={{ background: 'var(--bg-app)', color: 'var(--text-secondary)', cursor: 'not-allowed', fontWeight: '600' }} />
                     </div>
                     <div>
-                      <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Import Total (amb IVA) (€)</label>
-                      <input required className="input" type="number" step="0.01" value={expense.total} onChange={e => handleTotalChange(e.target.value)} style={{ fontWeight: 'bold' }} />
+                      <label className="label" style={{ display: 'block', marginBottom: '8px' }}>Import Total (amb IVA) (€)</label>
+                      <input required className="input" type="number" step="0.01" value={expense.total} onChange={e => handleTotalChange(e.target.value)} style={{ fontWeight: '800', borderColor: 'var(--primary)', color: 'var(--primary)' }} />
                     </div>
 
-                    <div style={{ gridColumn: 'span 2' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px', background: '#eff6ff', borderRadius: '8px', color: '#1e40af', fontSize: '13px' }}>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px', background: '#eff6ff', borderRadius: '8px', color: '#1e40af', fontSize: '13px' }}>
                         <Info size={16} />
                         <span>Pots introduir tant la <b>Base</b> com el <b>Total</b>; l'altre camp es calcularà automàticament.</span>
                       </div>
                     </div>
 
-                    <div style={{ gridColumn: 'span 2' }}>
-                      <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Data de la Despesa</label>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label className="label" style={{ display: 'block', marginBottom: '8px' }}>Data de la Despesa</label>
                       <input required className="input" type="date" value={expense.data_despesa} onChange={e => setExpense({...expense, data_despesa: e.target.value})} />
                     </div>
                   </div>
@@ -310,6 +306,13 @@ const NewExpense = () => {
                       <option value="MENSUAL">Mensual (es repeteix cada mes)</option>
                       <option value="ANUAL">Anual (es repeteix cada any)</option>
                     </select>
+                  </div>
+                  
+                  <div style={{ marginTop: '2rem' }}>
+                    <button type="submit" disabled={loading} className="btn btn-danger w-full" style={{ padding: '12px 24px' }}>
+                      {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
+                      Confirmar Despesa
+                    </button>
                   </div>
                 </div>
               </div>

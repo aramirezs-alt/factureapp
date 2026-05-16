@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useAnimation } from 'framer-motion';
 import { 
@@ -11,10 +11,16 @@ import {
   FiArrowRight,
   FiTrendingUp,
   FiActivity,
-  FiMousePointer
+  FiMousePointer,
+  FiMenu,
+  FiX,
+  FiLogIn,
+  FiUserPlus
 } from 'react-icons/fi';
+import { AnimatePresence } from 'framer-motion';
 
 const Landing = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   useEffect(() => {
     document.title = "FactureApp | Facturació Gratis per a Autònoms";
   }, []);
@@ -46,19 +52,49 @@ const Landing = () => {
         <div className="mesh-circle c3"></div>
       </div>
 
-      <nav className="navbar">
+      <nav className={`navbar ${isMenuOpen ? 'menu-active' : ''}`}>
         <div className="container">
           <div className="brand">
-            <div className="brand-logo">
-              <FiZap />
-            </div>
+            <img src="/favicon.svg" alt="Logo" className="brand-logo-img" />
             <span>FactureApp</span>
           </div>
-          <div className="nav-menu">
-            <Link to="/login" className="login-link">Iniciar Sessió</Link>
-            <Link to="/register" className="cta-button-nav">Començar ara</Link>
+          
+          <div className="nav-actions">
+            <div className="desktop-menu">
+              <Link to="/login" className="login-link">Iniciar Sessió</Link>
+              <Link to="/register" className="cta-button-nav">Començar ara</Link>
+            </div>
+            
+            <button className="menu-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              {isMenuOpen ? <FiX /> : <FiMenu />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu Overlay */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div 
+              className="mobile-overlay"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="mobile-menu-content">
+                <Link to="/login" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
+                  <FiLogIn /> Iniciar Sessió
+                </Link>
+                <Link to="/register" className="mobile-nav-cta" onClick={() => setIsMenuOpen(false)}>
+                  <FiUserPlus /> Registra't Gratis
+                </Link>
+                <div className="mobile-menu-footer">
+                  <p>© 2026 FactureApp - Facturació per a la nova era.</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       <main>
@@ -75,9 +111,9 @@ const Landing = () => {
                 <span className="badge">NEW</span>
                 <span className="text">Generació automàtica de factures PDF</span>
               </div>
-              <h1>
+              <h1 className="gradient-text">
                 Controla el teu negoci <br />
-                <span className="gradient-text">sense pagar ni un cèntim.</span>
+                sense pagar ni un cèntim.
               </h1>
               <p className="description">
                 La plataforma de facturació més intuïtiva per a autònoms i empreses. 
@@ -176,7 +212,7 @@ const Landing = () => {
         <section className="pricing-section">
           <div className="container">
             <div className="pricing-card">
-              <h3>El preu és...</h3>
+              <h3 className="gradient-text" style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>El preu és...</h3>
               <div className="huge-price">0€</div>
               <p>Perquè creiem que gestionar el teu negoci no hauria de costar-te diners.</p>
               <ul className="feature-list">
@@ -195,7 +231,7 @@ const Landing = () => {
         <div className="container">
           <div className="footer-content">
             <div className="footer-brand">
-              <FiZap /> FactureApp
+              <img src="/favicon.svg" alt="Logo" style={{ width: '30px', height: '30px' }} /> FactureApp
             </div>
             <div className="footer-links">
               <a href="#">Privacitat</a>
@@ -263,23 +299,6 @@ const Landing = () => {
         }
 
         /* Navbar */
-        .navbar {
-          position: fixed;
-          top: 0;
-          width: 100%;
-          z-index: 100;
-          padding: 1.5rem 0;
-          background: rgba(3, 7, 18, 0.7);
-          backdrop-filter: blur(10px);
-          border-bottom: 1px solid var(--glass-border);
-        }
-
-        .navbar .container {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
         .brand {
           display: flex;
           align-items: center;
@@ -289,12 +308,49 @@ const Landing = () => {
           letter-spacing: -0.5px;
         }
 
-        .brand-logo {
-          background: var(--primary);
-          padding: 0.5rem;
-          border-radius: 12px;
+        .brand-logo-img {
+          width: 40px;
+          height: 40px;
+          object-fit: contain;
+          filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+        }
+        .navbar {
+          position: fixed;
+          top: 0;
+          width: 100%;
+          z-index: 100;
+          padding: 1.5rem 0;
+          background: rgba(3, 7, 18, 0.85);
+          backdrop-filter: blur(15px);
+          border-bottom: 1px solid var(--glass-border);
+          transition: background 0.3s;
+        }
+
+        .navbar.menu-open {
+          background: #030712;
+        }
+
+        .navbar.menu-active {
+          background: rgba(3, 7, 18, 0.98);
+        }
+
+        .navbar .container {
           display: flex;
-          box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+          justify-content: space-between;
+          align-items: center;
+          position: relative;
+          z-index: 1000;
+        }
+
+        .nav-actions {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .desktop-menu {
+          display: flex;
+          align-items: center;
         }
 
         .login-link {
@@ -316,9 +372,86 @@ const Landing = () => {
           font-weight: 700;
           transition: all 0.3s;
           white-space: nowrap;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .cta-button-nav:hover { transform: scale(1.05); }
+
+        .menu-toggle {
+          display: none;
+          background: var(--glass);
+          border: 1px solid var(--glass-border);
+          color: white;
+          padding: 0.6rem;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.3s;
+          font-size: 1.25rem;
+          align-items: center;
+          justify-content: center;
+        }
+
+        /* Mobile Menu Overlay */
+        .mobile-overlay {
+          position: fixed;
+          inset: 0;
+          width: 100%;
+          height: 100vh;
+          background: #030712;
+          z-index: 999;
+          display: flex;
+          flex-direction: column;
+          padding: 7rem 2rem 2rem;
+        }
+
+        .mobile-menu-content {
+          display: flex;
+          flex-direction: column;
+          gap: 1.25rem;
+        }
+
+        .mobile-nav-link {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: var(--text);
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 1.25rem;
+          border-radius: 20px;
+          background: var(--glass);
+          border: 1px solid var(--glass-border);
+          text-decoration: none;
+          transition: all 0.3s;
+        }
+
+        .mobile-nav-cta {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: white;
+          background: linear-gradient(to right, var(--primary), var(--secondary));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
+          padding: 1.5rem;
+          border-radius: 20px;
+          text-decoration: none;
+          box-shadow: 0 15px 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .mobile-menu-footer {
+          margin-top: auto;
+          text-align: center;
+          padding-bottom: 2rem;
+        }
+
+        .mobile-menu-footer p {
+          color: var(--text-dim);
+          font-size: 0.85rem;
+        }
 
         /* Hero */
         .hero-section {
@@ -364,9 +497,12 @@ const Landing = () => {
         }
 
         .gradient-text {
-          background: linear-gradient(to right, #60a5fa, #22d3ee);
+          color: white; /* Fallback */
+          background: linear-gradient(to bottom, #ffffff 20%, #60a5fa 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
+          filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.2));
+          display: inline-block; /* Required for some clip effects */
         }
 
         .description {
@@ -510,15 +646,26 @@ const Landing = () => {
         /* Pricing */
         .pricing-section { padding: 8rem 0; background: white; color: #0f172a; }
         .pricing-card {
-          background: #0f172a;
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
           color: white;
           border-radius: 48px;
           padding: 5rem;
           text-align: center;
           position: relative;
           overflow: hidden;
+          border: 1px solid rgba(59, 130, 246, 0.2);
+          box-shadow: 0 40px 80px -20px rgba(0,0,0,0.5);
         }
-        .huge-price { font-size: 10rem; font-weight: 900; line-height: 1; margin: 2rem 0; background: linear-gradient(to bottom, #fff, #334155); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .huge-price { 
+          font-size: 10rem; 
+          font-weight: 900; 
+          line-height: 1; 
+          margin: 2rem 0; 
+          background: linear-gradient(to bottom, #ffffff, #60a5fa);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          filter: drop-shadow(0 0 20px rgba(96, 165, 250, 0.4));
+        }
         .feature-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; list-style: none; padding: 0; margin: 3rem 0; }
         .feature-list li { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; }
         .feature-list li svg { color: #10b981; }
@@ -544,21 +691,19 @@ const Landing = () => {
         .footer-bottom { text-align: center; font-size: 0.9rem; padding-top: 2rem; border-top: 1px solid #e2e8f0; }
 
         @media (max-width: 1024px) {
-          h1 { font-size: 3rem; }
+          h1 { font-size: 3.5rem; }
           .hero-section .container { grid-template-columns: 1fr; text-align: center; }
           .hero-content { display: flex; flex-direction: column; align-items: center; }
           .cta-group { justify-content: center; flex-wrap: wrap; }
           .trust-badges { justify-content: center; flex-wrap: wrap; gap: 1rem; }
           .hero-visual { display: none; }
-          .huge-price { font-size: 6rem; }
-          .pricing-card { padding: 3rem 1.5rem; }
+          .huge-price { font-size: 8rem; }
         }
 
         @media (max-width: 768px) {
-          .navbar { padding: 1rem 0; }
-          .brand span { font-size: 1.25rem; }
-          .login-link { margin-right: 1rem; font-size: 0.9rem; }
-          .cta-button-nav { padding: 0.5rem 1rem; font-size: 0.9rem; }
+          .navbar { padding: 1.25rem 0; }
+          .menu-toggle { display: flex; }
+          .desktop-menu { display: none; }
           
           h1 { font-size: 2.5rem; }
           .description { font-size: 1.1rem; }
@@ -570,9 +715,10 @@ const Landing = () => {
           }
           
           .features-grid { grid-template-columns: 1fr; }
-          .feature-card { padding: 2rem; }
+          .feature-card { padding: 2.5rem 1.5rem; }
           
           .huge-price { font-size: 5rem; }
+          .pricing-card { padding: 4rem 1.5rem; }
           .feature-list { flex-direction: column; align-items: center; gap: 1rem; }
           
           .footer-content { flex-direction: column; gap: 2rem; text-align: center; }

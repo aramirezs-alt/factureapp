@@ -8,7 +8,9 @@ import {
   FileText,
   TrendingUp,
   Calendar,
-  Loader2
+  Loader2,
+  ShieldCheck,
+  Info
 } from 'lucide-react';
 import Layout from '../components/Layout';
 import api from '../services/api';
@@ -32,7 +34,16 @@ const Dashboard = () => {
     totalExpenses: 0,
     pendingCount: 0,
     recentInvoices: [],
-    chartData: []
+    chartData: [],
+    taxSummary: {
+      quarter: 1,
+      ivaEstimate: 0,
+      irpfRetained: 0,
+      benefit: 0,
+      irpfModel130Estimate: 0,
+      personalTaxSaving: 0,
+      personalRate: 15
+    }
   });
   const [loading, setLoading] = useState(true);
   const [chartView, setChartView] = useState('monthly');
@@ -157,6 +168,70 @@ const Dashboard = () => {
           marginBottom: '2.5rem', 
           alignItems: 'start' 
         }}>
+          {/* Tax Summary Card */}
+          <div className="card" style={{ 
+            background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', 
+            border: '1px solid #e2e8f0',
+            gridColumn: isMobile ? '1' : '1 / -1'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
+              <ShieldCheck size={24} color="var(--primary)" />
+              <h2 style={{ fontSize: '1.1rem' }}>Previsió d'Impostos (T{statsData.taxSummary?.quarter} {new Date().getFullYear()})</h2>
+              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-secondary)', background: 'white', padding: '4px 10px', borderRadius: '20px', border: '1px solid var(--border)' }}>
+                <Info size={14} />
+                Estimat actual
+              </div>
+            </div>
+            
+            <div className="grid-responsive" style={{ gap: '1.5rem' }}>
+              <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                <p className="label" style={{ marginBottom: '0.5rem' }}>IVA a pagar (estimat)</p>
+                <h3 style={{ fontSize: '1.5rem', color: statsData.taxSummary?.ivaEstimate > 0 ? 'var(--danger)' : 'var(--success)' }}>
+                  €{statsData.taxSummary?.ivaEstimate.toLocaleString()}
+                </h3>
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>Vendes IVA - Despeses IVA</p>
+              </div>
+
+              <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                <p className="label" style={{ marginBottom: '0.5rem' }}>IRPF Retingut</p>
+                <h3 style={{ fontSize: '1.5rem', color: 'var(--primary)' }}>
+                  €{statsData.taxSummary?.irpfRetained.toLocaleString()}
+                </h3>
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>Retencions en factures emeses</p>
+              </div>
+
+              <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                <p className="label" style={{ marginBottom: '0.5rem' }}>Rendiment Net</p>
+                <h3 style={{ fontSize: '1.5rem', color: statsData.taxSummary?.benefit > 0 ? 'var(--success)' : 'var(--danger)' }}>
+                  €{statsData.taxSummary?.benefit.toLocaleString()}
+                </h3>
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>Base Ingressos - Base Despeses</p>
+              </div>
+
+              <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                <p className="label" style={{ marginBottom: '0.5rem' }}>Pago IRPF Mod. 130</p>
+                <h3 style={{ fontSize: '1.5rem', color: statsData.taxSummary?.irpfModel130Estimate > 0 ? 'var(--danger)' : 'var(--primary)' }}>
+                  €{statsData.taxSummary?.irpfModel130Estimate.toLocaleString()}
+                </h3>                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>Estimat (20% Benefici - Retencions)</p>
+              </div>
+
+              <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)', borderLeft: '4px solid #8b5cf6' }}>
+                <p className="label" style={{ marginBottom: '0.5rem' }}>Estalvi Personal Suggerit</p>
+                <h3 style={{ fontSize: '1.5rem', color: '#8b5cf6' }}>
+                  €{statsData.taxSummary?.personalTaxSaving.toLocaleString()}
+                </h3>
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>Basat en el teu {statsData.taxSummary?.personalRate}% personal</p>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 0.5rem' }}>
+                <p style={{ fontSize: '13px', fontWeight: '600', color: '#475569', marginBottom: '4px' }}>Tingues pau mental</p>
+                <p style={{ fontSize: '12px', color: '#64748b', lineHeight: '1.4' }}>
+                  Aquestes xifres són aproximades per ajudar-te a planificar. Recorda reservar l'IVA per a la propera liquidació.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Chart Card */}
           <div className="card">
             <div style={{ 

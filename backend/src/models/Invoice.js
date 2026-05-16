@@ -36,6 +36,14 @@ const Invoice = sequelize.define('Invoice', {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
   },
+  tipus_irpf: {
+    type: DataTypes.DECIMAL(5, 2),
+    defaultValue: 0,
+  },
+  total_irpf: {
+    type: DataTypes.DECIMAL(10, 2),
+    defaultValue: 0,
+  },
   total: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
