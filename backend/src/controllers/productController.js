@@ -17,8 +17,8 @@ const productController = {
       
       if (q) {
         where[Op.or] = [
-          { nom: { [Op.like]: `%${q}%` } },
-          { codi: { [Op.like]: `%${q}%` } }
+          { nom: { [Op.iLike]: `%${q}%` } },
+          { codi: { [Op.iLike]: `%${q}%` } }
         ];
       }
 

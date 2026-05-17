@@ -26,7 +26,7 @@ const businessController = {
     try {
       const {
         nom, cognoms, nom_negoci, nif_cif, telefon,
-        pais, adreca, ciutat, codi_postal, iva_defecte, irpf_defecte, serie_defecte
+        pais, adreca, ciutat, codi_postal, iva_defecte, irpf_defecte, irpf_estimat, serie_defecte
       } = req.body;
 
       let profile = await BusinessProfile.findOne({
@@ -43,6 +43,7 @@ const businessController = {
         pais, adreca, ciutat, codi_postal, 
         iva_defecte: iva_defecte ? parseFloat(iva_defecte) : profile.iva_defecte,
         irpf_defecte: irpf_defecte ? parseFloat(irpf_defecte) : profile.irpf_defecte,
+        irpf_estimat: irpf_estimat ? parseFloat(irpf_estimat) : profile.irpf_estimat,
         serie_defecte: serie_defecte || profile.serie_defecte
       };
 

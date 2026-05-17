@@ -86,7 +86,7 @@ const AssessorDashboard = () => {
                 >
                   {/* Card Header */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-                    <div style={{ width: '52px', height: '52px', borderRadius: '12px', background: '#DBEAFE', display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0, overflow: 'hidden' }}>
+                    <div style={{ width: '52px', height: '52px', borderRadius: '12px', background: 'rgba(37, 99, 235, 0.15)', display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0, overflow: 'hidden' }}>
                       {profile?.logo_url
                         ? <AuthenticatedImage src={profile.logo_url} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '12px' }} />
                         : <Building size={24} color="var(--primary)" />
@@ -104,18 +104,18 @@ const AssessorDashboard = () => {
                   {/* Stats */}
                   {summary ? (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
-                      <div style={{ textAlign: 'center', padding: '0.75rem', background: '#F0FDF4', borderRadius: '8px' }}>
+                      <div style={{ textAlign: 'center', padding: '0.75rem', background: 'var(--bg-app)', borderRadius: '8px', border: '1px solid var(--border)' }}>
                         <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px' }}>FACTURADO</p>
-                        <p style={{ fontWeight: '700', fontSize: '15px', color: '#10B981' }}>€{summary.totalInvoiced.toFixed(0)}</p>
+                        <p style={{ fontWeight: '700', fontSize: '15px', color: 'var(--secondary)' }}>€{summary.totalInvoiced.toFixed(0)}</p>
                       </div>
-                      <div style={{ textAlign: 'center', padding: '0.75rem', background: '#FFF7ED', borderRadius: '8px' }}>
+                      <div style={{ textAlign: 'center', padding: '0.75rem', background: 'var(--bg-app)', borderRadius: '8px', border: '1px solid var(--border)' }}>
                         <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px' }}>PENDENT</p>
-                        <p style={{ fontWeight: '700', fontSize: '15px', color: '#F59E0B' }}>{summary.pendingInvoices} fact.</p>
+                        <p style={{ fontWeight: '700', fontSize: '15px', color: 'var(--warning)' }}>{summary.pendingInvoices} fact.</p>
                       </div>
-                      <div style={{ textAlign: 'center', padding: '0.75rem', background: summary.overdueInvoices > 0 ? '#FEF2F2' : '#F9FAFB', borderRadius: '8px' }}>
+                      <div style={{ textAlign: 'center', padding: '0.75rem', background: summary.overdueInvoices > 0 ? 'rgba(239, 68, 68, 0.12)' : 'var(--bg-app)', borderRadius: '8px', border: `1px solid ${summary.overdueInvoices > 0 ? 'rgba(239, 68, 68, 0.3)' : 'var(--border)'}` }}>
                         <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px' }}>VENÇUDES</p>
-                        <p style={{ fontWeight: '700', fontSize: '15px', color: summary.overdueInvoices > 0 ? '#EF4444' : 'var(--text-secondary)' }}>
-                          {summary.overdueInvoices > 0 && <AlertCircle size={14} style={{ display: 'inline', marginRight: '3px' }} />}
+                        <p style={{ fontWeight: '700', fontSize: '15px', color: summary.overdueInvoices > 0 ? 'var(--danger)' : 'var(--text-secondary)' }}>
+                          {summary.overdueInvoices > 0 && <AlertCircle size={14} style={{ display: 'inline', marginRight: '3px', verticalAlign: 'middle' }} />}
                           {summary.overdueInvoices}
                         </p>
                       </div>

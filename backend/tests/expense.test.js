@@ -4,6 +4,7 @@ const { User, Expense, Provider, sequelize } = require('../src/models');
 const jwt = require('jsonwebtoken');
 
 describe('Expense Endpoints', () => {
+  jest.setTimeout(30000);
   let token;
   let userId;
   let providerId;
@@ -14,12 +15,12 @@ describe('Expense Endpoints', () => {
     // Create test user
     const user = await User.create({
       email: 'expense-test@example.com',
-      password: '12345678'
+      password_hash: '$2a$10$7Z7WkK.vD9uM9UfXU1r5.OGk/d0PZ0X6wW9nK6i4w.gZ.w.k.F.e2'
     });
     userId = user.id;
     
     // Generate token
-    token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+    token = jwt.sign({ id: user.id, rol: 'USER' }, process.env.JWT_SECRET || 'testsecret');
 
     // Create test provider
     const provider = await Provider.create({

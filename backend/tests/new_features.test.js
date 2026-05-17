@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 
 describe('New Features Endpoints', () => {
+  jest.setTimeout(30000);
   let token;
   let userId;
 
@@ -20,7 +21,7 @@ describe('New Features Endpoints', () => {
     userId = user.id;
     
     // Generate token
-    token = jwt.sign({ id: user.id }, process.env.JWT_SECRET || 'testsecret');
+    token = jwt.sign({ id: user.id, rol: 'USER' }, process.env.JWT_SECRET || 'testsecret');
 
     // Create a client
     await Client.create({

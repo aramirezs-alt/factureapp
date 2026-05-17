@@ -16,9 +16,9 @@ const clientController = {
       
       if (q) {
         where[Op.or] = [
-          { nom: { [Op.like]: `%${q}%` } },
-          { nif: { [Op.like]: `%${q}%` } },
-          { email: { [Op.like]: `%${q}%` } }
+          { nom: { [Op.iLike]: `%${q}%` } },
+          { nif: { [Op.iLike]: `%${q}%` } },
+          { email: { [Op.iLike]: `%${q}%` } }
         ];
       }
 

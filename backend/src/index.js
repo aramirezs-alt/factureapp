@@ -80,6 +80,9 @@ app.get('/api/test-db', async (req, res) => {
 });
 
 app.get('/api/setup-db', async (req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(403).json({ message: 'Database synchronization is disabled in production.' });
+  }
   try {
     await sequelize.sync({ alter: true });
     res.json({ message: 'Database synchronized successfully' });

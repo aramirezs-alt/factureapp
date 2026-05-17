@@ -3,10 +3,13 @@ import api from '../services/api';
 import Layout from '../components/Layout';
 import Pagination from '../components/Pagination';
 import { Plus, FileText, Search, Eye, Download, Copy, Share, Euro, Filter, Calendar, X, Mail, Loader2, FileDown } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 const Invoices = () => {
+  const [searchParams] = useSearchParams();
+  const initialEstat = searchParams.get('estat') || '';
+
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -16,8 +19,8 @@ const Invoices = () => {
   const [totalPages, setTotalPages] = useState(1);
   
   // Filtros
-  const [showFilters, setShowFilters] = useState(false);
-  const [statusFilter, setStatusFilter] = useState('');
+  const [showFilters, setShowFilters] = useState(!!initialEstat);
+  const [statusFilter, setStatusFilter] = useState(initialEstat);
   const [minAmount, setMinAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState('');
   const [fromDate, setFromDate] = useState('');
@@ -217,11 +220,12 @@ const Invoices = () => {
         {/* Advanced Filters Panel */}
         {showFilters && (
           <div className="card animate-fade-in" style={{ marginBottom: '1.5rem', background: 'var(--bg-app)', border: '1px solid var(--border)' }}>
-            <div className="grid-responsive" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+            <div className="grid-responsive" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
               <div>
                 <label className="label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px' }}>Estado</label>
-                <select className="input" value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }} style={{ height: '38px' }}>
+                <select className="input" value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }}>
                   <option value="">Tots els estats</option>
+                  <option value="PENDENTS">Pendents de Cobrar</option>
                   <option value="ESBORRANY">Esborrany</option>
                   <option value="ENVIADA">Enviada</option>
                   <option value="PAGADA">Pagada</option>
@@ -231,16 +235,16 @@ const Invoices = () => {
               </div>
               <div>
                 <label className="label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px' }}>Rango de Importe</label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <input type="number" placeholder="Mín" className="input" value={minAmount} onChange={e => { setMinAmount(e.target.value); setCurrentPage(1); }} style={{ height: '38px' }} />
-                  <input type="number" placeholder="Máx" className="input" value={maxAmount} onChange={e => { setMaxAmount(e.target.value); setCurrentPage(1); }} style={{ height: '38px' }} />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <input type="number" placeholder="Mín" className="input" value={minAmount} onChange={e => { setMinAmount(e.target.value); setCurrentPage(1); }} style={{ minWidth: 0 }} />
+                  <input type="number" placeholder="Máx" className="input" value={maxAmount} onChange={e => { setMaxAmount(e.target.value); setCurrentPage(1); }} style={{ minWidth: 0 }} />
                 </div>
               </div>
               <div>
                 <label className="label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px' }}>Rango de Fechas</label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <input type="date" className="input" value={fromDate} onChange={e => { setFromDate(e.target.value); setCurrentPage(1); }} style={{ height: '38px' }} />
-                  <input type="date" className="input" value={toDate} onChange={e => { setToDate(e.target.value); setCurrentPage(1); }} style={{ height: '38px' }} />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <input type="date" className="input" value={fromDate} onChange={e => { setFromDate(e.target.value); setCurrentPage(1); }} style={{ minWidth: 0 }} />
+                  <input type="date" className="input" value={toDate} onChange={e => { setToDate(e.target.value); setCurrentPage(1); }} style={{ minWidth: 0 }} />
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'flex-end' }}>

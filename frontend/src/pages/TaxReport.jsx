@@ -98,7 +98,7 @@ const TaxReport = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
           <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#DBEAFE', color: 'var(--primary)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(37, 99, 235, 0.15)', color: 'var(--primary)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <ArrowUpRight />
             </div>
             <div>
@@ -107,7 +107,7 @@ const TaxReport = () => {
             </div>
           </div>
           <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#FEE2E2', color: '#EF4444', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.15)', color: '#EF4444', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <ArrowDownLeft />
             </div>
             <div>
@@ -116,7 +116,7 @@ const TaxReport = () => {
             </div>
           </div>
           <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', border: '2px solid var(--secondary)' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#D1FAE5', color: 'var(--secondary)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.15)', color: 'var(--secondary)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <TrendingUp />
             </div>
             <div>
@@ -130,7 +130,7 @@ const TaxReport = () => {
           <div className="card" style={{ padding: '0' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ textAlign: 'left', background: '#F9FAFB', borderBottom: '1px solid var(--border)' }}>
+                <tr style={{ textAlign: 'left', background: 'var(--bg-app)', borderBottom: '1px solid var(--border)' }}>
                   <th style={{ padding: '1rem 1.5rem' }} className="label">TRIMESTRE</th>
                   <th style={{ padding: '1rem 1.5rem' }} className="label">IVA REPERC.</th>
                   <th style={{ padding: '1rem 1.5rem' }} className="label">IVA SOPORT.</th>

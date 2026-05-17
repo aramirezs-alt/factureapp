@@ -20,8 +20,8 @@ const expenseController = {
       // Cerca per descripció o proveïdor
       if (q) {
         where[Op.or] = [
-          { descripcio: { [Op.like]: `%${q}%` } },
-          { '$Provider.nom$': { [Op.like]: `%${q}%` } }
+          { descripcio: { [Op.iLike]: `%${q}%` } },
+          { '$Provider.nom$': { [Op.iLike]: `%${q}%` } }
         ];
       }
 
@@ -36,7 +36,7 @@ const expenseController = {
       if (fromDate || toDate) {
         where.data_despesa = {};
         if (fromDate) where.data_despesa[Op.gte] = new Date(fromDate);
-        if (toDate) where.data_despesa[Op.lte] = new Date(toDate);
+        if (toDate) where.data_despesa[Op.lte] = new Date(toDate + 'T23:59:59.999Z');
       }
 
       // Filtre per categoria (especificat al PDF)

@@ -143,15 +143,33 @@ const runTaxDeadlinesCheck = async () => {
 
       // Notify if deadline is in 15, 7, 3 or 1 days
       if ([15, 7, 3, 1].includes(diffDays)) {
-        const users = await User.findAll({ where: { rol: 'USER' } });
-        for (const user of users) {
-          await Notification.create({
+        const batchSize = 100;
+        let offset = 0;
+        let hasMore = true;
+
+        while (hasMore) {
+          const users = await User.findAll({ 
+            where: { rol: 'USER' },
+            limit: batchSize,
+            offset: offset,
+            attributes: ['id']
+          });
+
+          if (users.length === 0) {
+            hasMore = false;
+            break;
+          }
+
+          const notificationsData = users.map(user => ({
             titol: `Recordatori Impostos: ${deadline.name}`,
             missatge: `Queden ${diffDays} dies per presentar la declaració del ${deadline.name}. No ho deixis per l'últim moment!`,
             usuari_id: user.id,
             tipus: diffDays <= 3 ? 'DANGER' : 'WARNING',
             link: '/stats'
-          });
+          }));
+
+          await Notification.bulkCreate(notificationsData);
+          offset += batchSize;
         }
       }
     }

@@ -30,7 +30,7 @@ router.get('/check-auth', authController.checkAuth);
 
 // @route   POST api/auth/test-smtp
 // @desc    Test SMTP configuration (only for debugging)
-router.post('/test-smtp', authController.testSMTP);
+router.post('/test-smtp', authMiddleware, authController.testSMTP);
 
 
 module.exports = router;

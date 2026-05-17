@@ -14,6 +14,15 @@ const EditExpense = () => {
   const [saving, setSaving] = useState(false);
   const [providers, setProviders] = useState([]);
   const [file, setFile] = useState(null);
+  
+  // Preview states
+  const [filePreview, setFilePreview] = useState(null);
+  const [previewType, setPreviewType] = useState(null);
+  
+  const [savedPreviewUrl, setSavedPreviewUrl] = useState(null);
+  const [savedPreviewType, setSavedPreviewType] = useState(null);
+  const [savedPreviewLoading, setSavedPreviewLoading] = useState(false);
+
   const [expense, setExpense] = useState({
     descripcio: '', 
     base_imposable: 0,
@@ -44,6 +53,32 @@ const EditExpense = () => {
           data_despesa: new Date(data.data_despesa).toISOString().split('T')[0],
           notes: data.notes || ''
         });
+
+        if (data.adjunt_url) {
+          const urlStr = data.adjunt_url;
+          const extension = urlStr.split('.').pop().toLowerCase();
+          let type = 'other';
+          if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(extension)) {
+            type = 'image';
+          } else if (extension === 'pdf') {
+            type = 'pdf';
+          }
+          setSavedPreviewType(type);
+
+          if (type === 'image' || type === 'pdf') {
+            setSavedPreviewLoading(true);
+            try {
+              const resFile = await api.get(urlStr.replace(/.*\/uploads\//, '/uploads/'), { responseType: 'blob' });
+              const blob = new Blob([resFile.data], { type: resFile.headers['content-type'] });
+              const preview = window.URL.createObjectURL(blob);
+              setSavedPreviewUrl(preview);
+            } catch (err) {
+              console.error('Error fetching preview:', err);
+            } finally {
+              setSavedPreviewLoading(false);
+            }
+          }
+        }
       } catch (err) {
         toast.error('Error al carregar dades');
         navigate('/expenses');
@@ -53,6 +88,36 @@ const EditExpense = () => {
     };
     fetchData();
   }, [id, navigate]);
+
+  useEffect(() => {
+    return () => {
+      if (savedPreviewUrl) {
+        window.URL.revokeObjectURL(savedPreviewUrl);
+      }
+    };
+  }, [savedPreviewUrl]);
+
+  useEffect(() => {
+    if (!file) {
+      setFilePreview(null);
+      setPreviewType(null);
+      return;
+    }
+
+    const extension = file.name.split('.').pop().toLowerCase();
+    let type = 'other';
+    if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(extension)) {
+      type = 'image';
+    } else if (extension === 'pdf') {
+      type = 'pdf';
+    }
+    setPreviewType(type);
+
+    const objectUrl = URL.createObjectURL(file);
+    setFilePreview(objectUrl);
+
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [file]);
 
   const handleDownloadAttachment = async (e) => {
     e.preventDefault();
@@ -270,12 +335,66 @@ const EditExpense = () => {
                   <h3>Tiquet / Comprovant</h3>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  {expense.adjunt_url && (
-                    <div style={{ padding: '1rem', background: 'var(--bg-app)', borderRadius: '8px', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '13px' }}>Tiquet actual guardat</span>
-                      <button type="button" onClick={handleDownloadAttachment} className="btn btn-ghost" style={{ padding: '4px 8px', fontSize: '12px' }}>Veure Tiquet</button>
+                  
+                  {/* Preview container (either saved or new file) */}
+                  {(file || expense.adjunt_url) && (
+                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.5rem', background: '#F3F4F6', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', overflow: 'hidden', alignItems: 'center' }}>
+                      <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>
+                        {file ? 'Vista prèvia del nou tiquet seleccionat:' : 'Vista prèvia del tiquet actual guardat:'}
+                      </span>
+                      
+                      {file ? (
+                        /* Local Preview */
+                        previewType === 'image' && filePreview ? (
+                          <img 
+                            src={filePreview} 
+                            alt="Nou tiquet seleccionat" 
+                            style={{ maxWidth: '100%', maxHeight: '300px', borderRadius: '6px', objectFit: 'contain', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} 
+                          />
+                        ) : previewType === 'pdf' && filePreview ? (
+                          <div style={{ width: '100%', height: '300px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                            <iframe 
+                              src={filePreview} 
+                              title="Nou PDF" 
+                              style={{ width: '100%', height: '100%', border: 'none' }}
+                            />
+                          </div>
+                        ) : (
+                          <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Arxiu seleccionat no previsualitzable: {file.name}</span>
+                        )
+                      ) : (
+                        /* Saved Preview from DB */
+                        savedPreviewLoading ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '1rem' }}>
+                            <Loader2 className="animate-spin" size={18} color="var(--primary)" />
+                            <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Carregant vista prèvia...</span>
+                          </div>
+                        ) : savedPreviewType === 'image' && savedPreviewUrl ? (
+                          <img 
+                            src={savedPreviewUrl} 
+                            alt="Tiquet guardat" 
+                            style={{ maxWidth: '100%', maxHeight: '300px', borderRadius: '6px', objectFit: 'contain', cursor: 'pointer', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
+                            onClick={handleDownloadAttachment}
+                            title="Fes clic per obrir o descarregar"
+                          />
+                        ) : savedPreviewType === 'pdf' && savedPreviewUrl ? (
+                          <div style={{ width: '100%', height: '300px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                            <iframe 
+                              src={savedPreviewUrl} 
+                              title="PDF guardat" 
+                              style={{ width: '100%', height: '100%', border: 'none' }}
+                            />
+                          </div>
+                        ) : (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center' }}>
+                            <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Hi ha un document adjunt, format no previsualitzable.</span>
+                            <button type="button" onClick={handleDownloadAttachment} className="btn btn-secondary" style={{ padding: '4px 10px', fontSize: '12px' }}>Obrir / Descarregar Document</button>
+                          </div>
+                        )
+                      )}
                     </div>
                   )}
+
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <label className="label">{expense.adjunt_url ? 'Reemplaçar arxiu' : 'Pujar arxiu (Foto o PDF)'}</label>
                     <input 

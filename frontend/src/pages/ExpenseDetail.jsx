@@ -23,15 +23,52 @@ const ExpenseDetail = () => {
   const navigate = useNavigate();
   const [expense, setExpense] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewType, setPreviewType] = useState(null); // 'image', 'pdf', or 'other'
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   useEffect(() => {
     fetchExpense();
   }, [id]);
 
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        window.URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
   const fetchExpense = async () => {
     try {
       const response = await api.get(`/expenses/${id}`);
       setExpense(response.data);
+
+      if (response.data.adjunt_url) {
+        const urlStr = response.data.adjunt_url;
+        const extension = urlStr.split('.').pop().toLowerCase();
+        let type = 'other';
+        if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(extension)) {
+          type = 'image';
+        } else if (extension === 'pdf') {
+          type = 'pdf';
+        }
+        setPreviewType(type);
+
+        if (type === 'image' || type === 'pdf') {
+          setPreviewLoading(true);
+          try {
+            const resFile = await api.get(urlStr.replace(/.*\/uploads\//, '/uploads/'), { responseType: 'blob' });
+            const blob = new Blob([resFile.data], { type: resFile.headers['content-type'] });
+            const preview = window.URL.createObjectURL(blob);
+            setPreviewUrl(preview);
+          } catch (err) {
+            console.error('Error fetching preview:', err);
+          } finally {
+            setPreviewLoading(false);
+          }
+        }
+      }
     } catch (err) {
       toast.error('Error al carregar la despesa');
       navigate('/expenses');
@@ -53,6 +90,16 @@ const ExpenseDetail = () => {
 
   const handleDownloadAttachment = async () => {
     try {
+      if (previewUrl) {
+        // If we already have the object URL, we can download it directly!
+        const link = document.createElement('a');
+        link.href = previewUrl;
+        link.setAttribute('download', expense.adjunt_url.split('/').pop());
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        return;
+      }
       const toastId = toast.loading('Descarregant fitxer...');
       const response = await api.get(expense.adjunt_url.replace(/.*\/uploads\//, '/uploads/'), { responseType: 'blob' });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -194,12 +241,41 @@ const ExpenseDetail = () => {
               
               {expense.adjunt_url ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <div style={{ padding: '1.5rem', background: 'var(--bg-app)', borderRadius: '12px', border: '1px solid var(--border)', textAlign: 'center' }}>
-                    <p style={{ fontSize: '14px', marginBottom: '1rem' }}>Hi ha un document adjunt per a aquesta despesa.</p>
+                  <div style={{ padding: '1rem', background: 'var(--bg-app)', borderRadius: '12px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                    {previewLoading ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '2rem' }}>
+                        <Loader2 className="animate-spin" size={24} color="var(--primary)" />
+                        <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Carregant vista prèvia...</span>
+                      </div>
+                    ) : previewType === 'image' && previewUrl ? (
+                      <div style={{ width: '100%', display: 'flex', justifyContent: 'center', background: '#F3F4F6', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', overflow: 'hidden' }}>
+                        <img 
+                          src={previewUrl} 
+                          alt="Tiquet o comprovant" 
+                          style={{ maxWidth: '100%', maxHeight: '450px', borderRadius: '6px', objectFit: 'contain', cursor: 'pointer', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
+                          onClick={() => window.open(previewUrl, '_blank')}
+                          title="Fes clic per obrir a mida completa"
+                        />
+                      </div>
+                    ) : previewType === 'pdf' && previewUrl ? (
+                      <div style={{ width: '100%', height: '450px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                        <iframe 
+                          src={previewUrl} 
+                          title="Vista prèvia de PDF" 
+                          style={{ width: '100%', height: '100%', border: 'none' }}
+                        />
+                      </div>
+                    ) : (
+                      <div style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                        <p style={{ fontSize: '14px', margin: '0 0 1rem 0' }}>Hi ha un fitxer adjunt per a aquesta despesa (format no previsualitzable).</p>
+                      </div>
+                    )}
+                    
                     <button 
                       type="button"
                       onClick={handleDownloadAttachment} 
                       className="btn btn-primary"
+                      style={{ width: '100%', justifyContent: 'center' }}
                     >
                       <Download size={18} />
                       Obrir / Descarregar Document

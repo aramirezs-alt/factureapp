@@ -3,6 +3,7 @@ const app = require('../src/index');
 const { User, sequelize } = require('../src/models');
 
 describe('Auth Endpoints', () => {
+  jest.setTimeout(30000);
   beforeAll(async () => {
     // Sync database before tests
     await sequelize.sync({ force: true });

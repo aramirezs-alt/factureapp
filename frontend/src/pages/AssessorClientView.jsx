@@ -102,7 +102,7 @@ const AssessorClientView = () => {
           </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '60px', height: '60px', borderRadius: '14px', background: '#DBEAFE', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
+            <div style={{ width: '60px', height: '60px', borderRadius: '14px', background: 'rgba(37, 99, 235, 0.15)', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
               {profile?.logo_url
                 ? <AuthenticatedImage src={profile.logo_url} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 : <Building size={28} color="var(--primary)" />
@@ -121,7 +121,7 @@ const AssessorClientView = () => {
         {stats && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
             <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: '#D1FAE5', color: '#10B981', display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.15)', color: '#10B981', display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 }}>
                 <TrendingUp size={20} />
               </div>
               <div>
@@ -130,7 +130,7 @@ const AssessorClientView = () => {
               </div>
             </div>
             <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: '#FEE2E2', color: '#EF4444', display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(239, 68, 68, 0.15)', color: '#EF4444', display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 }}>
                 <TrendingDown size={20} />
               </div>
               <div>
@@ -139,7 +139,7 @@ const AssessorClientView = () => {
               </div>
             </div>
             <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: '#FEF3C7', color: '#F59E0B', display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(245, 158, 11, 0.15)', color: '#F59E0B', display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 }}>
                 <Clock size={20} />
               </div>
               <div>
@@ -149,7 +149,7 @@ const AssessorClientView = () => {
             </div>
             {stats.overdueInvoices > 0 && (
               <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem', borderColor: '#FCA5A5' }}>
-                <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: '#FEE2E2', color: '#EF4444', display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 }}>
+                <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(239, 68, 68, 0.15)', color: '#EF4444', display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 }}>
                   <AlertCircle size={20} />
                 </div>
                 <div>
@@ -176,7 +176,7 @@ const AssessorClientView = () => {
           </div>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ textAlign: 'left', background: '#F9FAFB', borderBottom: '1px solid var(--border)' }}>
+              <tr style={{ textAlign: 'left', background: 'var(--bg-app)', borderBottom: '1px solid var(--border)' }}>
                 <th style={{ padding: '0.875rem 1rem' }} className="label">NÚMERO</th>
                 <th style={{ padding: '0.875rem 1rem' }} className="label">CLIENT</th>
                 <th style={{ padding: '0.875rem 1rem' }} className="label">EMISSIÓ</th>

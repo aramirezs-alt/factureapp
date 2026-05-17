@@ -173,15 +173,14 @@ const Expenses = () => {
 
         {/* Advanced Filters Panel */}
         {showFilters && (
-          <div className="card animate-fade-in" style={{ marginBottom: '1.5rem', background: '#F9FAFB', border: '1px solid var(--border)' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+          <div className="card animate-fade-in" style={{ marginBottom: '1.5rem', background: 'var(--bg-app)', border: '1px solid var(--border)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
               <div>
                 <label className="label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px' }}>Proveïdor</label>
                 <select 
                   className="input" 
                   value={providerFilter} 
-                  onChange={e => { setProviderFilter(e.target.value); setCurrentPage(1); }} 
-                  style={{ height: '38px' }}
+                  onChange={e => { setProviderFilter(e.target.value); setCurrentPage(1); }}
                 >
                   <option value="">Tots els proveïdors</option>
                   {providers.map(p => (
@@ -191,16 +190,16 @@ const Expenses = () => {
               </div>
               <div>
                 <label className="label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px' }}>Rang d'Import</label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <input type="number" placeholder="Mín" className="input" value={minAmount} onChange={e => { setMinAmount(e.target.value); setCurrentPage(1); }} style={{ height: '38px' }} />
-                  <input type="number" placeholder="Máx" className="input" value={maxAmount} onChange={e => { setMaxAmount(e.target.value); setCurrentPage(1); }} style={{ height: '38px' }} />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <input type="number" placeholder="Mín" className="input" value={minAmount} onChange={e => { setMinAmount(e.target.value); setCurrentPage(1); }} style={{ minWidth: 0 }} />
+                  <input type="number" placeholder="Máx" className="input" value={maxAmount} onChange={e => { setMaxAmount(e.target.value); setCurrentPage(1); }} style={{ minWidth: 0 }} />
                 </div>
               </div>
               <div>
                 <label className="label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px' }}>Dates</label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <input type="date" className="input" value={fromDate} onChange={e => { setFromDate(e.target.value); setCurrentPage(1); }} style={{ height: '38px' }} />
-                  <input type="date" className="input" value={toDate} onChange={e => { setToDate(e.target.value); setCurrentPage(1); }} style={{ height: '38px' }} />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <input type="date" className="input" value={fromDate} onChange={e => { setFromDate(e.target.value); setCurrentPage(1); }} style={{ minWidth: 0 }} />
+                  <input type="date" className="input" value={toDate} onChange={e => { setToDate(e.target.value); setCurrentPage(1); }} style={{ minWidth: 0 }} />
                 </div>
               </div>
               <div>
@@ -209,7 +208,7 @@ const Expenses = () => {
                   className="input" 
                   value={categoryFilter} 
                   onChange={e => { setCategoryFilter(e.target.value); setCurrentPage(1); }} 
-                  style={{ height: '38px', width: '100%' }}
+                  style={{ width: '100%' }}
                 >
                   <option value="">Totes les categories</option>
                   <option value="Compres">Compres</option>

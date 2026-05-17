@@ -92,9 +92,9 @@ const Dashboard = () => {
 
 
   const stats = [
-    { label: 'Total Facturado', value: `€${totalInvoiced.toLocaleString()}`, icon: <ArrowUpRight />, color: '#10B981', bg: '#D1FAE5' },
-    { label: 'Gastos Globales', value: `€${totalExpenses.toLocaleString()}`, icon: <ArrowDownLeft />, color: '#EF4444', bg: '#FEE2E2' },
-    { label: 'Cobros Pendientes', value: `${pendingCount} Facturas`, icon: <Clock />, color: '#F59E0B', bg: '#FEF3C7' },
+    { label: 'Total Facturado', value: `€${totalInvoiced.toLocaleString()}`, icon: <ArrowUpRight />, color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)' },
+    { label: 'Gastos Globales', value: `€${totalExpenses.toLocaleString()}`, icon: <ArrowDownLeft />, color: '#EF4444', bg: 'rgba(239, 68, 68, 0.15)' },
+    { label: 'Cobros Pendientes', value: `${pendingCount} Facturas`, icon: <Clock />, color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)' },
   ];
 
   if (loading) {
@@ -138,27 +138,67 @@ const Dashboard = () => {
 
         {/* Stats Grid */}
         <div className="grid-responsive" style={{ marginBottom: '2.5rem' }}>
-          {stats.map((stat, idx) => (
-            <div key={idx} className="card" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-              <div style={{ 
-                width: '52px', 
-                height: '52px', 
-                borderRadius: '12px', 
-                background: stat.bg, 
-                color: stat.color,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                flexShrink: 0
-              }}>
-                {stat.icon}
+          {stats.map((stat, idx) => {
+            const isPending = idx === 2;
+            return (
+              <div 
+                key={idx} 
+                className="card" 
+                onClick={isPending ? () => navigate('/invoices?estat=PENDENTS') : undefined}
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '1.25rem',
+                  cursor: isPending ? 'pointer' : 'default',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
+                onMouseEnter={isPending ? (e) => { 
+                  e.currentTarget.style.transform = 'translateY(-3px)'; 
+                  e.currentTarget.style.boxShadow = 'var(--shadow)';
+                  e.currentTarget.style.borderColor = 'var(--primary)';
+                } : undefined}
+                onMouseLeave={isPending ? (e) => { 
+                  e.currentTarget.style.transform = 'none'; 
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.borderColor = 'var(--border)';
+                } : undefined}
+              >
+                <div style={{ 
+                  width: '52px', 
+                  height: '52px', 
+                  borderRadius: '12px', 
+                  background: stat.bg, 
+                  color: stat.color,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flexShrink: 0
+                }}>
+                  {stat.icon}
+                </div>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <p style={{ marginBottom: '0.1rem' }} className="label">{stat.label}</p>
+                  <h2 style={{ fontSize: '1.5rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.value}</h2>
+                </div>
+                {isPending && (
+                  <div style={{
+                    fontSize: '11px',
+                    fontWeight: '600',
+                    color: 'var(--primary)',
+                    background: 'var(--primary-light)',
+                    padding: '4px 10px',
+                    borderRadius: '20px',
+                    whiteSpace: 'nowrap',
+                    border: '1px solid rgba(37, 99, 235, 0.15)'
+                  }}>
+                    Veure tot
+                  </div>
+                )}
               </div>
-              <div style={{ minWidth: 0 }}>
-                <p style={{ marginBottom: '0.1rem' }} className="label">{stat.label}</p>
-                <h2 style={{ fontSize: '1.5rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.value}</h2>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div style={{ 
@@ -170,29 +210,29 @@ const Dashboard = () => {
         }}>
           {/* Tax Summary Card */}
           <div className="card" style={{ 
-            background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', 
-            border: '1px solid #e2e8f0',
+            background: 'var(--grad-surface)', 
+            borderColor: 'var(--border)',
             gridColumn: isMobile ? '1' : '1 / -1'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
               <ShieldCheck size={24} color="var(--primary)" />
               <h2 style={{ fontSize: '1.1rem' }}>Previsió d'Impostos (T{statsData.taxSummary?.quarter} {new Date().getFullYear()})</h2>
-              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-secondary)', background: 'white', padding: '4px 10px', borderRadius: '20px', border: '1px solid var(--border)' }}>
+              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-secondary)', background: 'var(--bg-app)', padding: '4px 10px', borderRadius: '20px', border: '1px solid var(--border)' }}>
                 <Info size={14} />
                 Estimat actual
               </div>
             </div>
             
             <div className="grid-responsive" style={{ gap: '1.5rem' }}>
-              <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
+              <div style={{ background: 'var(--bg-app)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
                 <p className="label" style={{ marginBottom: '0.5rem' }}>IVA a pagar (estimat)</p>
-                <h3 style={{ fontSize: '1.5rem', color: statsData.taxSummary?.ivaEstimate > 0 ? 'var(--danger)' : 'var(--success)' }}>
+                <h3 style={{ fontSize: '1.5rem', color: statsData.taxSummary?.ivaEstimate > 0 ? 'var(--danger)' : 'var(--secondary)' }}>
                   €{statsData.taxSummary?.ivaEstimate.toLocaleString()}
                 </h3>
                 <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>Vendes IVA - Despeses IVA</p>
               </div>
 
-              <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
+              <div style={{ background: 'var(--bg-app)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
                 <p className="label" style={{ marginBottom: '0.5rem' }}>IRPF Retingut</p>
                 <h3 style={{ fontSize: '1.5rem', color: 'var(--primary)' }}>
                   €{statsData.taxSummary?.irpfRetained.toLocaleString()}
@@ -200,32 +240,33 @@ const Dashboard = () => {
                 <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>Retencions en factures emeses</p>
               </div>
 
-              <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
+              <div style={{ background: 'var(--bg-app)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
                 <p className="label" style={{ marginBottom: '0.5rem' }}>Rendiment Net</p>
-                <h3 style={{ fontSize: '1.5rem', color: statsData.taxSummary?.benefit > 0 ? 'var(--success)' : 'var(--danger)' }}>
+                <h3 style={{ fontSize: '1.5rem', color: statsData.taxSummary?.benefit > 0 ? 'var(--secondary)' : 'var(--danger)' }}>
                   €{statsData.taxSummary?.benefit.toLocaleString()}
                 </h3>
                 <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>Base Ingressos - Base Despeses</p>
               </div>
 
-              <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
+              <div style={{ background: 'var(--bg-app)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
                 <p className="label" style={{ marginBottom: '0.5rem' }}>Pago IRPF Mod. 130</p>
                 <h3 style={{ fontSize: '1.5rem', color: statsData.taxSummary?.irpfModel130Estimate > 0 ? 'var(--danger)' : 'var(--primary)' }}>
                   €{statsData.taxSummary?.irpfModel130Estimate.toLocaleString()}
-                </h3>                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>Estimat (20% Benefici - Retencions)</p>
+                </h3>
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>Estimat (20% Benefici - Retencions)</p>
               </div>
 
-              <div style={{ background: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)', borderLeft: '4px solid #8b5cf6' }}>
+              <div style={{ background: 'var(--bg-app)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
                 <p className="label" style={{ marginBottom: '0.5rem' }}>Estalvi Personal Suggerit</p>
-                <h3 style={{ fontSize: '1.5rem', color: '#8b5cf6' }}>
+                <h3 style={{ fontSize: '1.5rem', color: 'var(--primary)' }}>
                   €{statsData.taxSummary?.personalTaxSaving.toLocaleString()}
                 </h3>
                 <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>Basat en el teu {statsData.taxSummary?.personalRate}% personal</p>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 0.5rem' }}>
-                <p style={{ fontSize: '13px', fontWeight: '600', color: '#475569', marginBottom: '4px' }}>Tingues pau mental</p>
-                <p style={{ fontSize: '12px', color: '#64748b', lineHeight: '1.4' }}>
+                <p style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '4px' }}>Tingues pau mental</p>
+                <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
                   Aquestes xifres són aproximades per ajudar-te a planificar. Recorda reservar l'IVA per a la propera liquidació.
                 </p>
               </div>
@@ -262,7 +303,8 @@ const Dashboard = () => {
                       fontSize: '11px', 
                       borderRadius: '6px', 
                       border: 'none',
-                      background: chartView === 'monthly' ? 'white' : 'transparent',
+                      background: chartView === 'monthly' ? 'var(--bg-card)' : 'transparent',
+                      color: 'var(--text-primary)',
                       boxShadow: chartView === 'monthly' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
                       cursor: 'pointer'
                     }}
@@ -275,7 +317,8 @@ const Dashboard = () => {
                       fontSize: '11px', 
                       borderRadius: '6px', 
                       border: 'none',
-                      background: chartView === 'quarterly' ? 'white' : 'transparent',
+                      background: chartView === 'quarterly' ? 'var(--bg-card)' : 'transparent',
+                      color: 'var(--text-primary)',
                       boxShadow: chartView === 'quarterly' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
                       cursor: 'pointer'
                     }}

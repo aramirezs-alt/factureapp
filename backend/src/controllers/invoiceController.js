@@ -184,14 +184,20 @@ const invoiceController = {
       const where = { usuari_id: req.user.id };
       
       if (client_id) where.client_id = client_id;
-      if (estat) where.estat = estat;
+      if (estat) {
+        if (estat === 'PENDENTS') {
+          where.estat = { [Op.in]: ['ENVIADA', 'VENÇUDA'] };
+        } else {
+          where.estat = estat;
+        }
+      }
 
       // Search query (Invoice number or Client name)
       if (q) {
         where[Op.or] = [
-          { numero_Factura: { [Op.like]: `%${q}%` } },
-          { serie: { [Op.like]: `%${q}%` } },
-          { '$Client.nom$': { [Op.like]: `%${q}%` } }
+          { numero_Factura: { [Op.iLike]: `%${q}%` } },
+          { serie: { [Op.iLike]: `%${q}%` } },
+          { '$Client.nom$': { [Op.iLike]: `%${q}%` } }
         ];
       }
       
@@ -251,7 +257,7 @@ const invoiceController = {
   create: async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
-      const { lines, client_id, serie, ...invoiceData } = req.body;
+      const { lines, client_id, serie, tipus_irpf, ...invoiceData } = req.body;
       if (!client_id) return res.status(400).json({ message: 'El cliente es obligatorio' });
       if (!lines || lines.length === 0) return res.status(400).json({ message: 'La factura debe tener al menos una línea' });
 
@@ -295,6 +301,7 @@ const invoiceController = {
       res.status(201).json(fullInvoice);
     } catch (error) {
       if (transaction) await transaction.rollback();
+      console.error('Error creating invoice:', error);
       res.status(400).json({ message: 'Error al crear la factura. Revisa les dades.' });
     }
   },
@@ -323,7 +330,8 @@ const invoiceController = {
         await InvoiceLine.bulkCreate(processedLines.map(line => ({ ...line, factura_id: invoice.id })), { transaction });
       } else if (req.body.tipus_irpf !== undefined) {
         // Only IRPF changed
-        const { total_irpf, total } = _processInvoiceLines(lines || (await invoice.getInvoiceLines()), req.body.tipus_irpf);
+        const dbLines = await InvoiceLine.findAll({ where: { factura_id: invoice.id }, raw: true });
+        const { total_irpf, total } = _processInvoiceLines(dbLines, req.body.tipus_irpf);
         totalsUpdate = { tipus_irpf: req.body.tipus_irpf, total_irpf, total };
       }
 
@@ -332,6 +340,7 @@ const invoiceController = {
       res.json({ message: 'Invoice updated successfully' });
     } catch (error) {
       if (transaction) await transaction.rollback();
+      console.error('Error updating invoice:', error);
       res.status(400).json({ message: 'Error al actualitzar la factura.' });
     }
   },

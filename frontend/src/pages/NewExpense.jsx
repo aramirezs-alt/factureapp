@@ -12,6 +12,8 @@ const NewExpense = () => {
   const [loading, setLoading] = useState(false);
   const [providers, setProviders] = useState([]);
   const [file, setFile] = useState(null);
+  const [filePreview, setFilePreview] = useState(null);
+  const [previewType, setPreviewType] = useState(null);
   const [expense, setExpense] = useState({
     descripcio: '', 
     base_imposable: 0,
@@ -58,6 +60,28 @@ const NewExpense = () => {
     };
     fetchData();
   }, [duplicateId]);
+
+  useEffect(() => {
+    if (!file) {
+      setFilePreview(null);
+      setPreviewType(null);
+      return;
+    }
+
+    const extension = file.name.split('.').pop().toLowerCase();
+    let type = 'other';
+    if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(extension)) {
+      type = 'image';
+    } else if (extension === 'pdf') {
+      type = 'pdf';
+    }
+    setPreviewType(type);
+
+    const objectUrl = URL.createObjectURL(file);
+    setFilePreview(objectUrl);
+
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [file]);
 
   const handleBaseChange = (val) => {
     const base = parseFloat(val) || 0;
@@ -252,7 +276,33 @@ const NewExpense = () => {
                     onChange={e => setFile(e.target.files[0])}
                     style={{ padding: '0.5rem' }}
                   />
-                  {file && <span style={{ fontSize: '13px', color: 'var(--secondary)' }}>Arxiu seleccionat: {file.name}</span>}
+                  {file && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      <span style={{ fontSize: '13px', color: 'var(--secondary)' }}>Arxiu seleccionat: {file.name}</span>
+                      
+                      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.5rem', background: '#F3F4F6', padding: '10px', borderRadius: '8px', border: '1px solid var(--border)', overflow: 'hidden', alignItems: 'center' }}>
+                        {previewType === 'image' && filePreview ? (
+                          <img 
+                            src={filePreview} 
+                            alt="Vista prèvia tiquet" 
+                            style={{ maxWidth: '100%', maxHeight: '300px', borderRadius: '6px', objectFit: 'contain', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} 
+                          />
+                        ) : previewType === 'pdf' && filePreview ? (
+                          <div style={{ width: '100%', height: '300px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                            <iframe 
+                              src={filePreview} 
+                              title="Vista prèvia PDF" 
+                              style={{ width: '100%', height: '100%', border: 'none' }}
+                            />
+                          </div>
+                        ) : (
+                          <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '13px' }}>
+                            Format no previsualitzable.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/* OCR scanner – image is also used as the attachment */}
                   <OcrScanner

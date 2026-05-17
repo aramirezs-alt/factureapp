@@ -111,19 +111,20 @@ const statsController = {
       const currentQuarter = Math.floor(now.getMonth() / 3) + 1;
       const startMonth = (currentQuarter - 1) * 3;
       const qStartDate = new Date(now.getFullYear(), startMonth, 1);
+      const qEndDate = new Date(now.getFullYear(), startMonth + 3, 0, 23, 59, 59);
       
       const qInvoices = await Invoice.findAll({
         where: { 
           usuari_id: userId, 
-          data_emissio: { [Op.gte]: qStartDate },
-          estat: { [Op.ne]: 'CANCEL·LADA' }
+          data_emissio: { [Op.between]: [qStartDate, qEndDate] },
+          estat: { [Op.in]: ['ENVIADA', 'PAGADA', 'VENÇUDA'] }
         },
         attributes: ['total_iva', 'total_irpf', 'base_imposable']
       });
       const qExpenses = await Expense.findAll({
         where: { 
           usuari_id: userId, 
-          data_despesa: { [Op.gte]: qStartDate }
+          data_despesa: { [Op.between]: [qStartDate, qEndDate] }
         },
         attributes: ['import_iva', 'import_net']
       });

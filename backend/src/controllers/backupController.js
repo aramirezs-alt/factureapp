@@ -77,7 +77,7 @@ const backupController = {
 
       // Clients — keep ID for referential integrity
       for (const c of clients) {
-        const exists = await Client.findOne({ where: { id: c.id, usuari_id: userId }, transaction: t });
+        const exists = c.id ? await Client.findOne({ where: { id: c.id, usuari_id: userId }, transaction: t }) : null;
         if (!exists) {
           await Client.create({ ...c, usuari_id: userId }, { transaction: t });
           summary.clients++;
@@ -86,7 +86,7 @@ const backupController = {
 
       // Products — keep ID
       for (const p of products) {
-        const exists = await Product.findOne({ where: { id: p.id, usuari_id: userId }, transaction: t });
+        const exists = p.id ? await Product.findOne({ where: { id: p.id, usuari_id: userId }, transaction: t }) : null;
         if (!exists) {
           await Product.create({ ...p, usuari_id: userId }, { transaction: t });
           summary.products++;
@@ -95,7 +95,7 @@ const backupController = {
 
       // Providers — keep ID
       for (const pv of providers) {
-        const exists = await Provider.findOne({ where: { id: pv.id, usuari_id: userId }, transaction: t });
+        const exists = pv.id ? await Provider.findOne({ where: { id: pv.id, usuari_id: userId }, transaction: t }) : null;
         if (!exists) {
           await Provider.create({ ...pv, usuari_id: userId }, { transaction: t });
           summary.providers++;
@@ -104,7 +104,7 @@ const backupController = {
 
       // Expenses — keep ID, prevent duplicate creation
       for (const e of expenses) {
-        const exists = await Expense.findOne({ where: { id: e.id, usuari_id: userId }, transaction: t });
+        const exists = e.id ? await Expense.findOne({ where: { id: e.id, usuari_id: userId }, transaction: t }) : null;
         if (!exists) {
           await Expense.create({ ...e, usuari_id: userId }, { transaction: t });
           summary.expenses++;
@@ -113,7 +113,7 @@ const backupController = {
 
       // Invoices — restore fully with lines
       for (const inv of invoices) {
-        const exists = await Invoice.findOne({ where: { id: inv.id, usuari_id: userId }, transaction: t });
+        const exists = inv.id ? await Invoice.findOne({ where: { id: inv.id, usuari_id: userId }, transaction: t }) : null;
         if (!exists) {
           const { InvoiceLines, ...invData } = inv;
           await Invoice.create({ ...invData, usuari_id: userId }, { transaction: t });
