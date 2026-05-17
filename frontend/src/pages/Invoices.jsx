@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import Layout from '../components/Layout';
 import Pagination from '../components/Pagination';
-import { Plus, FileText, Search, Eye, Download, Copy, Share, Euro, Filter, Calendar, X, Mail, Loader2, FileDown } from 'lucide-react';
+import Modal from '../components/Modal';
+import { Plus, FileText, Search, Eye, Download, Copy, Share, Euro, Filter, Calendar, X, Mail, Loader2, FileDown, Send } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -26,7 +27,29 @@ const Invoices = () => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   
+  // Email Customizer Modal
+  const [profile, setProfile] = useState(null);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [isMailModalOpen, setIsMailModalOpen] = useState(false);
+  const [mailSubject, setMailSubject] = useState('');
+  const [mailMessage, setMailMessage] = useState('');
+  const [recipientEmail, setRecipientEmail] = useState('');
+  const [sending, setSending] = useState(false);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await api.get('/business/profile');
+      setProfile(response.data);
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+    }
+  };
 
   const fetchInvoices = useCallback(async () => {
     setLoading(true);
@@ -97,14 +120,95 @@ const Invoices = () => {
     }
   };
 
-  const handleQuickSend = async (id) => {
-    const toastId = toast.loading('Enviando factura...');
+  const getHtmlEmailContent = () => {
+    if (!selectedInvoice) return '';
+    const invoiceName = `${selectedInvoice.serie}-${selectedInvoice.numero_Factura}`;
+    const businessName = profile?.nom_negoci || 'TronDisc Solucions Digitals';
+    const formattedMessage = mailMessage.replace(/\n/g, '<br/>');
+    
+    return `
+      <div style="background-color:#f3f4f6; padding: 40px 20px; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#1f2937;">
+        <div style="max-width:600px; margin:0 auto; background-color:#ffffff; border-radius:16px; overflow:hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;">
+          <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 32px; text-align: center; color: #ffffff;">
+            <h1 style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">${businessName}</h1>
+            <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.9;">Document Comercial Oficial</p>
+          </div>
+          <div style="padding: 32px;">
+            <h2 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 700; color: #111827;">Hola ${selectedInvoice.Client?.nom},</h2>
+            <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 1.6; color: #4b5563;">${formattedMessage}</p>
+            
+            <div style="background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+              <h3 style="margin: 0 0 16px 0; font-size: 14px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px;">Detalls de la Factura</h3>
+              <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
+                <tr>
+                  <td style="padding: 6px 0; color: #6b7280; font-weight: 500;">Número de Factura:</td>
+                  <td style="padding: 6px 0; text-align: right; color: #111827; font-weight: 700;">${invoiceName}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; color: #6b7280; font-weight: 500;">Data d'Emissió:</td>
+                  <td style="padding: 6px 0; text-align: right; color: #111827; font-weight: 600;">${new Date(selectedInvoice.data_emissio).toLocaleDateString()}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; color: #6b7280; font-weight: 500;">Data de Venciment:</td>
+                  <td style="padding: 6px 0; text-align: right; color: #111827; font-weight: 600;">${new Date(selectedInvoice.data_venciment).toLocaleDateString()}</td>
+                </tr>
+                <tr style="border-top: 1px dashed #e5e7eb;">
+                  <td style="padding: 16px 0 0 0; color: #111827; font-weight: 800; font-size: 16px;">TOTAL NET:</td>
+                  <td style="padding: 16px 0 0 0; text-align: right; color: #2563eb; font-weight: 900; font-size: 24px;">€${parseFloat(selectedInvoice.total).toFixed(2)}</td>
+                </tr>
+              </table>
+            </div>
+            
+            <div style="display: flex; align-items: center; background-color: #eff6ff; border-radius: 8px; padding: 12px 16px; margin-bottom: 24px;">
+              <span style="font-size: 20px; margin-right: 12px;">📎</span>
+              <span style="font-size: 14px; color: #1e40af; font-weight: 600;">S'ha adjuntat el PDF de la factura a aquest correu.</span>
+            </div>
+            
+            <p style="margin: 0 0 8px 0; font-size: 15px; color: #6b7280; font-weight: 500;">Cordialment,</p>
+            <p style="margin: 0; font-size: 16px; font-weight: 700; color: #111827;">${businessName}</p>
+          </div>
+          <div style="background-color: #f9fafb; border-top: 1px solid #e5e7eb; padding: 24px; text-align: center; color: #9ca3af; font-size: 12px;">
+            <p style="margin: 0 0 8px 0;">Aquest és un correu automàtic de facturació.</p>
+            <p style="margin: 0;">© 2026 ${businessName}. Tots els drets reservats.</p>
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+  const handleQuickSend = (id) => {
+    const inv = invoices.find(i => i.id === id);
+    if (!inv) return;
+    if (!inv.Client?.email) {
+      return toast.error('El client no té email configurat');
+    }
+    const invoiceName = `${inv.serie}-${inv.numero_Factura}`;
+    const businessName = profile?.nom_negoci || 'TronDisc Solucions Digitals';
+    
+    setSelectedInvoice(inv);
+    setMailSubject(`Factura ${invoiceName} - ${businessName}`);
+    setMailMessage(`Hola ${inv.Client?.nom || ''},\n\nUs adjuntem en aquest correu la factura corresponent als darrers serveis i productes prestats.\n\nSi us plau, reviseu els detalls adjunts i no dubteu a respondre directament a aquest correu en cas de tenir qualsevol pregunta.\n\nAtentament,`);
+    setRecipientEmail(inv.Client?.email);
+    setIsMailModalOpen(true);
+  };
+
+  const sendEmailApi = async () => {
+    if (!selectedInvoice) return;
+    setSending(true);
+    const toastId = toast.loading('Enviant factura personalitzada...');
     try {
-      await api.post(`/invoices/${id}/send`);
-      toast.success('Factura enviada por email', { id: toastId });
+      const emailHtml = getHtmlEmailContent();
+      await api.post(`/invoices/${selectedInvoice.id}/send`, {
+        subject: mailSubject,
+        html: emailHtml
+      });
+      toast.success('Factura enviada correctament', { id: toastId });
+      setIsMailModalOpen(false);
       fetchInvoices();
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Error al enviar email', { id: toastId });
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Error al enviar la factura', { id: toastId });
+    } finally {
+      setSending(false);
     }
   };
 
@@ -338,6 +442,161 @@ const Invoices = () => {
           onPageChange={handlePageChange} 
         />
       </div>
+
+      <Modal 
+        isOpen={isMailModalOpen} 
+        onClose={() => setIsMailModalOpen(false)} 
+        title="Enviar Factura Personalitzada" 
+        width="1100px"
+      >
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2rem', minHeight: '500px' }}>
+          
+          {/* Left Column: Editor Form */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)' }}>
+              Personalitza el correu que rebrà el teu client. S'adjuntarà automàticament el PDF de la factura.
+            </p>
+            
+            <div>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Destinatari
+              </label>
+              <input 
+                type="email" 
+                className="input" 
+                value={recipientEmail} 
+                onChange={(e) => setRecipientEmail(e.target.value)} 
+                placeholder="correu@client.com"
+                style={{ width: '100%', background: 'var(--bg-app)', border: '1px solid var(--border)' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Assumpte del Correu
+              </label>
+              <input 
+                type="text" 
+                className="input" 
+                value={mailSubject} 
+                onChange={(e) => setMailSubject(e.target.value)} 
+                placeholder="Assumpte"
+                style={{ width: '100%', background: 'var(--bg-app)', border: '1px solid var(--border)' }}
+              />
+            </div>
+
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Missatge del Correu
+              </label>
+              <textarea 
+                className="input" 
+                value={mailMessage} 
+                onChange={(e) => setMailMessage(e.target.value)} 
+                placeholder="Escriu el teu missatge aquí..."
+                rows={8}
+                style={{ 
+                  width: '100%', 
+                  flex: 1, 
+                  background: 'var(--bg-app)', 
+                  border: '1px solid var(--border)', 
+                  resize: 'none', 
+                  fontFamily: 'inherit',
+                  lineHeight: '1.6',
+                  padding: '12px'
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+              <button 
+                onClick={() => setIsMailModalOpen(false)} 
+                className="btn btn-secondary" 
+                style={{ flex: 1, padding: '12px' }}
+              >
+                Cancel·lar
+              </button>
+              <button 
+                onClick={sendEmailApi} 
+                disabled={sending}
+                className="btn btn-primary" 
+                style={{ flex: 2, padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+              >
+                {sending ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                Enviar Factura
+              </button>
+            </div>
+          </div>
+
+          {/* Right Column: Live Premium Preview */}
+          <div style={{ display: 'flex', flexDirection: 'column', background: 'var(--bg-app)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.5rem', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid var(--border)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
+              <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#EF4444' }}></div>
+              <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#F59E0B' }}></div>
+              <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#10B981' }}></div>
+              <span style={{ fontSize: '12px', color: 'var(--text-secondary)', marginLeft: '8px', fontWeight: '600' }}>Vista Prèvia del Correu Rebut</span>
+            </div>
+
+            <div style={{ flex: 1, overflowY: 'auto', maxHeight: '420px', background: '#f3f4f6', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '1.5rem 1rem' }}>
+              <div style={{ maxWidth: '500px', margin: '0 auto', background: '#ffffff', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.05)', border: '1px solid #e5e7eb', fontFamily: 'sans-serif', color: '#1f2937' }}>
+                
+                {/* Header Gradient */}
+                <div style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', padding: '24px', textAlign: 'center', color: '#ffffff' }}>
+                  <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', letterSpacing: '-0.5px' }}>{profile?.nom_negoci || 'TronDisc Solucions Digitals'}</h3>
+                  <p style={{ margin: '4px 0 0 0', fontSize: '11px', opacity: 0.8 }}>Document Comercial Oficial</p>
+                </div>
+                
+                {/* Email Body */}
+                <div style={{ padding: '24px', fontSize: '14px', lineHeight: '1.6' }}>
+                  <h4 style={{ margin: '0 0 12px 0', fontSize: '16px', fontWeight: '700', color: '#111827' }}>Hola {selectedInvoice?.Client?.nom || 'Client'},</h4>
+                  <p style={{ margin: '0 0 20px 0', color: '#4b5563', whiteSpace: 'pre-wrap' }}>{mailMessage}</p>
+                  
+                  {/* Styled Invoice Details Box */}
+                  <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px', marginBottom: '20px' }}>
+                    <h5 style={{ margin: '0 0 12px 0', fontSize: '11px', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Detalls de la Factura</h5>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                      <tbody>
+                        <tr>
+                          <td style={{ padding: '4px 0', color: '#6b7280' }}>Número de Factura:</td>
+                          <td style={{ padding: '4px 0', textAlign: 'right', color: '#111827', fontWeight: '700' }}>{selectedInvoice?.serie}-{selectedInvoice?.numero_Factura}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ padding: '4px 0', color: '#6b7280' }}>Data d'Emissió:</td>
+                          <td style={{ padding: '4px 0', textAlign: 'right', color: '#111827', fontWeight: '600' }}>{selectedInvoice ? new Date(selectedInvoice.data_emissio).toLocaleDateString() : ''}</td>
+                        </tr>
+                        <tr>
+                          <td style={{ padding: '4px 0', color: '#6b7280' }}>Data de Venciment:</td>
+                          <td style={{ padding: '4px 0', textAlign: 'right', color: '#111827', fontWeight: '600' }}>{selectedInvoice ? new Date(selectedInvoice.data_venciment).toLocaleDateString() : ''}</td>
+                        </tr>
+                        <tr style={{ borderTop: '1px dashed #e5e7eb' }}>
+                          <td style={{ padding: '12px 0 0 0', color: '#111827', fontWeight: '800' }}>TOTAL NET:</td>
+                          <td style={{ padding: '12px 0 0 0', textAlign: 'right', color: '#2563eb', fontWeight: '900', fontSize: '18px' }}>€{selectedInvoice ? parseFloat(selectedInvoice.total).toFixed(2) : '0.00'}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  {/* Attachment Pill */}
+                  <div style={{ display: 'flex', alignItems: 'center', background: '#eff6ff', borderRadius: '6px', padding: '8px 12px', marginBottom: '20px' }}>
+                    <span style={{ fontSize: '16px', marginRight: '8px' }}>📎</span>
+                    <span style={{ fontSize: '12px', color: '#1e40af', fontWeight: '600' }}>S'ha adjuntat el PDF de la factura a aquest correu.</span>
+                  </div>
+
+                  <p style={{ margin: '0 0 4px 0', fontSize: '13px', color: '#6b7280' }}>Cordialment,</p>
+                  <p style={{ margin: 0, fontSize: '14px', fontWeight: '700', color: '#111827' }}>{profile?.nom_negoci || 'TronDisc Solucions Digitals'}</p>
+                </div>
+                
+                {/* Footer */}
+                <div style={{ background: '#f9fafb', borderTop: '1px solid #e5e7eb', padding: '16px', textAlign: 'center', color: '#9ca3af', fontSize: '10px' }}>
+                  <p style={{ margin: '0 0 4px 0' }}>Aquest és un correu automàtic de facturació.</p>
+                  <p style={{ margin: 0 }}>© 2026 {profile?.nom_negoci || 'TronDisc Solucions Digitals'}. Tots els drets reservats.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </Modal>
     </Layout>
   );
 };

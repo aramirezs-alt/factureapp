@@ -37,7 +37,11 @@ async function seed() {
       defaults: {
         nom: 'Empresa Examen SL',
         email: 'facturacio@examen.com',
-        ciutat: 'Barcelona'
+        ciutat: 'Barcelona',
+        telefon: '931112233',
+        pais: 'España',
+        adreca: 'Calle Diagonal 123',
+        codi_postal: '08018'
       },
       transaction
     });
@@ -48,7 +52,9 @@ async function seed() {
       defaults: {
         nom: 'Amazon Web Services',
         email: 'billing@aws.com',
-        categoria: 'Software'
+        categoria: 'Software',
+        telefon: '900800700',
+        adreca: 'Seattle Headquarters'
       },
       transaction
     });

@@ -521,20 +521,23 @@ const invoiceController = {
 
       const invoiceName = `${invoice.serie}-${invoice.numero_Factura}`;
       
+      const emailSubject = req.body?.subject || `Factura ${invoiceName} - ${profile?.nom_negoci || 'FactureApp'}`;
+      const emailHtml = req.body?.html || `
+        <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
+          <h2>Hola ${invoice.Client.nom},</h2>
+          <p>Adjunt trobaràs la factura <b>${invoiceName}</b> corresponent als nostres serveis/productes.</p>
+          <p>Import total: <b>€${parseFloat(invoice.total).toFixed(2)}</b></p>
+          <p>Si tens qualsevol dubte, pots contactar amb nosaltres responent a aquest correu.</p>
+          <br/>
+          <p>Salutacions,</p>
+          <p><b>${profile?.nom_negoci || 'L\'equip de FactureApp'}</b></p>
+        </div>
+      `;
+
       await sendEmail({
         to: invoice.Client.email,
-        subject: `Factura ${invoiceName} - ${profile?.nom_negoci || 'FactureApp'}`,
-        html: `
-          <div style="font-family: sans-serif; line-height: 1.6; color: #333;">
-            <h2>Hola ${invoice.Client.nom},</h2>
-            <p>Adjunt trobaràs la factura <b>${invoiceName}</b> corresponent als nostres serveis/productes.</p>
-            <p>Import total: <b>€${parseFloat(invoice.total).toFixed(2)}</b></p>
-            <p>Si tens qualsevol dubte, pots contactar amb nosaltres responent a aquest correu.</p>
-            <br/>
-            <p>Salutacions,</p>
-            <p><b>${profile?.nom_negoci || 'L\'equip de FactureApp'}</b></p>
-          </div>
-        `,
+        subject: emailSubject,
+        html: emailHtml,
         attachments: [{
           filename: `Factura-${invoiceName}.pdf`,
           content: pdfBuffer
