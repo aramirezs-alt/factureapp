@@ -197,7 +197,7 @@ const ExpenseDetail = () => {
               {expense.periodicitat && expense.periodicitat !== 'CAP' && (
                 <div style={{ padding: '10px', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #dcfce7', display: 'flex', alignItems: 'center', gap: '8px', color: '#166534' }}>
                   <Calendar size={16} />
-                  <span style={{ fontSize: '13px', fontWeight: '600' }}>Gasto Recurrent: {expense.periodicitat}</span>
+                  <span style={{ fontSize: '13px', fontWeight: '600' }}>Despesa Recurrent: {expense.periodicitat}</span>
                 </div>
               )}
             </div>

@@ -178,7 +178,7 @@ const TaxReport = () => {
                 Previsión IRPF
               </h3>
               <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '1rem', lineHeight: '1.5' }}>
-                Estimació basada en el rendiment neto (Ingresos - Gastos) aplicant el teu tipus configurat del <strong style={{ color: 'var(--text-primary)' }}>{irpfRate}%</strong> en pagaments fraccionats (Modelo 130).
+                Estimació basada en el rendiment neto (Ingresos - Despeses) aplicant el teu tipus configurat del <strong style={{ color: 'var(--text-primary)' }}>{irpfRate}%</strong> en pagaments fraccionats (Modelo 130).
               </p>
               <div style={{ 
                 padding: '0.75rem', 

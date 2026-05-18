@@ -26,7 +26,7 @@ import {
   Legend
 } from 'recharts';
 
-const Dashboard = () => {
+const Tauler = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [statsData, setStatsData] = useState({
@@ -93,8 +93,8 @@ const Dashboard = () => {
 
   const stats = [
     { label: 'Total Facturado', value: `€${totalInvoiced.toLocaleString()}`, icon: <ArrowUpRight />, color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)' },
-    { label: 'Gastos Globales', value: `€${totalExpenses.toLocaleString()}`, icon: <ArrowDownLeft />, color: '#EF4444', bg: 'rgba(239, 68, 68, 0.15)' },
-    { label: 'Cobros Pendientes', value: `${pendingCount} Facturas`, icon: <Clock />, color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)' },
+    { label: 'Despeses Globales', value: `€${totalExpenses.toLocaleString()}`, icon: <ArrowDownLeft />, color: '#EF4444', bg: 'rgba(239, 68, 68, 0.15)' },
+    { label: 'Cobros Pendientes', value: `${pendingCount} Factures`, icon: <Clock />, color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)' },
   ];
 
   if (loading) {
@@ -132,7 +132,7 @@ const Dashboard = () => {
             }}
           >
             <Plus size={20} />
-            Nueva Factura
+            Nova Factura
           </button>
         </header>
 
@@ -338,7 +338,7 @@ const Dashboard = () => {
                   />
                   <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ paddingBottom: '20px', fontSize: '11px' }} />
                   <Bar dataKey="Ingresos" fill="#2563EB" radius={[4, 4, 0, 0]} barSize={isMobile ? 16 : 24} />
-                  <Bar dataKey="Gastos" fill="#EF4444" radius={[4, 4, 0, 0]} barSize={isMobile ? 16 : 24} />
+                  <Bar dataKey="Despeses" fill="#EF4444" radius={[4, 4, 0, 0]} barSize={isMobile ? 16 : 24} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -392,4 +392,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Tauler;

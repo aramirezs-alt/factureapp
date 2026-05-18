@@ -274,7 +274,7 @@ const Invoices = () => {
           gap: '1rem'
         }}>
           <div>
-            <h1>Facturas</h1>
+            <h1>Factures</h1>
             <p>Historial completo de tus ventas y estados de cobro.</p>
           </div>
           <div style={{ 
@@ -389,7 +389,7 @@ const Invoices = () => {
                   return (
                     <tr key={inv.id} style={{ borderBottom: '1px solid var(--border)' }} className="table-row-hover">
                       <td style={{ padding: '1rem', fontWeight: '600' }} className="mono">{invoiceFullNumber}</td>
-                      <td style={{ padding: '1rem', fontWeight: '500' }}>{inv.Client?.nom || 'Cliente desconocido'}</td>
+                      <td style={{ padding: '1rem', fontWeight: '500' }}>{inv.Client?.nom || 'Client desconocido'}</td>
                       <td style={{ padding: '1rem', color: 'var(--text-secondary)' }}>{new Date(inv.data_emissio).toLocaleDateString()}</td>
                       <td style={{ padding: '1rem', fontWeight: '700' }}>€{parseFloat(inv.total).toFixed(2)}</td>
                       <td style={{ padding: '1rem' }}>

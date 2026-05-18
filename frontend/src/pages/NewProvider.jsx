@@ -19,10 +19,10 @@ const NewProvider = () => {
     const toastId = toast.loading('Guardando proveedor...');
     try {
       await api.post('/providers', provider);
-      toast.success('Proveedor creado correctamente', { id: toastId });
+      toast.success('Proveïdor creado correctamente', { id: toastId });
       navigate('/providers');
     } catch (err) {
-      toast.error('Error al guardar el proveedor', { id: toastId });
+      toast.error('Error en desar el proveedor', { id: toastId });
     } finally {
       setLoading(false);
     }
@@ -38,13 +38,13 @@ const NewProvider = () => {
                 <ArrowLeft size={20} />
               </button>
               <div>
-                <h1>Nuevo Proveedor</h1>
+                <h1>Nuevo Proveïdor</h1>
                 <p>Registra un nuevo contacto de suministro.</p>
               </div>
             </div>
             <button type="submit" disabled={loading} className="btn btn-primary" style={{ padding: '12px 24px' }}>
               {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-              Guardar Proveedor
+              Desar Proveïdor
             </button>
           </header>
 
@@ -52,7 +52,7 @@ const NewProvider = () => {
             <div className="card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--primary)', marginBottom: '1.5rem' }}>
                 <Building size={20} />
-                <h3>Datos del Proveedor</h3>
+                <h3>Datos del Proveïdor</h3>
               </div>
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>

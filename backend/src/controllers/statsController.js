@@ -2,7 +2,7 @@ const { Invoice, InvoiceLine, Expense, Client, sequelize } = require('../models'
 const { Op } = require('sequelize');
 
 const statsController = {
-  getDashboardStats: async (req, res) => {
+  getTaulerStats: async (req, res) => {
     try {
       const userId = req.user.id;
       const now = new Date();
@@ -43,7 +43,7 @@ const statsController = {
             month: d.getMonth() + 1,
             year: d.getFullYear(),
             Ingresos: 0,
-            Gastos: 0
+            Despeses: 0
           });
         }
         startDate = new Date(now.getFullYear(), now.getMonth() - 5, 1);
@@ -58,7 +58,7 @@ const statsController = {
             month: d.getMonth() + 1,
             year: d.getFullYear(),
             Ingresos: 0,
-            Gastos: 0
+            Despeses: 0
           });
         }
         startDate = new Date(selectedYear, startMonth, 1);
@@ -98,13 +98,13 @@ const statsController = {
         const y = d.getFullYear();
         const monthData = chartMonths.find(md => md.month === m && md.year === y);
         if (monthData) {
-          monthData.Gastos += parseFloat(exp.total) || 0;
+          monthData.Despeses += parseFloat(exp.total) || 0;
         }
       });
 
       chartMonths.forEach(m => {
         m.Ingresos = parseFloat(m.Ingresos.toFixed(2));
-        m.Gastos = parseFloat(m.Gastos.toFixed(2));
+        m.Despeses = parseFloat(m.Despeses.toFixed(2));
       });
 
       // 4. Current Quarter Tax Summary
@@ -130,10 +130,10 @@ const statsController = {
       });
 
       let qIvaIngresos = 0;
-      let qIvaGastos = 0;
+      let qIvaDespeses = 0;
       let qIrpfRetenido = 0;
       let qBaseIngresos = 0;
-      let qBaseGastos = 0;
+      let qBaseDespeses = 0;
 
       qInvoices.forEach(i => {
         qIvaIngresos += parseFloat(i.total_iva) || 0;
@@ -141,22 +141,22 @@ const statsController = {
         qBaseIngresos += parseFloat(i.base_imposable) || 0;
       });
       qExpenses.forEach(e => {
-        qIvaGastos += parseFloat(e.import_iva) || 0;
-        qBaseGastos += parseFloat(e.import_net) || 0;
+        qIvaDespeses += parseFloat(e.import_iva) || 0;
+        qBaseDespeses += parseFloat(e.import_net) || 0;
       });
 
       const { BusinessProfile } = require('../models');
       const profile = await BusinessProfile.findOne({ where: { usuari_id: userId } });
       const irpfPersonalRate = profile?.irpf_estimat || 15.0;
 
-      const irpf20 = (qBaseIngresos - qBaseGastos) > 0 ? (qBaseIngresos - qBaseGastos) * 0.20 : 0;
-      const irpfPersonalEstimate = (qBaseIngresos - qBaseGastos) > 0 ? (qBaseIngresos - qBaseGastos) * (irpfPersonalRate / 100) : 0;
+      const irpf20 = (qBaseIngresos - qBaseDespeses) > 0 ? (qBaseIngresos - qBaseDespeses) * 0.20 : 0;
+      const irpfPersonalEstimate = (qBaseIngresos - qBaseDespeses) > 0 ? (qBaseIngresos - qBaseDespeses) * (irpfPersonalRate / 100) : 0;
 
       const taxSummary = {
         quarter: currentQuarter,
-        ivaEstimate: parseFloat((qIvaIngresos - qIvaGastos).toFixed(2)),
+        ivaEstimate: parseFloat((qIvaIngresos - qIvaDespeses).toFixed(2)),
         irpfRetained: parseFloat(qIrpfRetenido.toFixed(2)),
-        benefit: parseFloat((qBaseIngresos - qBaseGastos).toFixed(2)),
+        benefit: parseFloat((qBaseIngresos - qBaseDespeses).toFixed(2)),
         irpfModel130Estimate: parseFloat(Math.max(0, irpf20 - qIrpfRetenido).toFixed(2)),
         personalTaxSaving: parseFloat(Math.max(0, irpfPersonalEstimate - qIrpfRetenido).toFixed(2)),
         personalRate: irpfPersonalRate
@@ -185,7 +185,7 @@ const statsController = {
         taxSummary
       });
     } catch (error) {
-      console.error('Dashboard stats error:', error);
+      console.error('Tauler stats error:', error);
       res.status(500).json({ message: 'Error al recuperar les estadístiques.' });
     }
   },

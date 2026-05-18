@@ -15,13 +15,13 @@ const NewProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const toastId = toast.loading('Guardando producto...');
+    const toastId = toast.loading('Desant producte...');
     try {
       await api.post('/products', product);
-      toast.success('Producto creado correctamente', { id: toastId });
+      toast.success('Producte creat correctament', { id: toastId });
       navigate('/products');
     } catch (err) {
-      toast.error('Error al guardar el producto', { id: toastId });
+      toast.error('Error en desar el producte', { id: toastId });
     } finally {
       setLoading(false);
     }
@@ -37,13 +37,13 @@ const NewProduct = () => {
                 <ArrowLeft size={20} />
               </button>
               <div>
-                <h1>Nuevo Producto</h1>
+                <h1>Nou Producte</h1>
                 <p>Añade artículos a tu catálogo para facturarlos en un clic.</p>
               </div>
             </div>
             <button type="submit" disabled={loading} className="btn btn-primary" style={{ padding: '12px 24px' }}>
               {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-              Guardar Producto
+              Desar Producte
             </button>
           </header>
 
@@ -51,7 +51,7 @@ const NewProduct = () => {
             <div className="card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--primary)', marginBottom: '1.5rem' }}>
                 <Info size={20} />
-                <h3>Información del Producto</h3>
+                <h3>Informació del Producte</h3>
               </div>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -61,7 +61,7 @@ const NewProduct = () => {
                 </div>
                 <div>
                   <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Descripción Detallada</label>
-                  <textarea className="input" style={{ minHeight: '150px' }} value={product.descripcio} onChange={e => setProduct({...product, descripcio: e.target.value})} placeholder="Describe las características del producto o servicio..." />
+                  <textarea className="input" style={{ minHeight: '150px' }} value={product.descripcio} onChange={e => setProduct({...product, descripcio: e.target.value})} placeholder="Descriu les característiques del producte o servei..." />
                 </div>
               </div>
             </div>
@@ -81,7 +81,7 @@ const NewProduct = () => {
                   <input required className="input" type="number" value={product.tipus_iva} onChange={e => setProduct({...product, tipus_iva: parseInt(e.target.value) || 0})} />
                 </div>
                 <div style={{ background: '#F9FAFB', padding: '1rem', borderRadius: 'var(--radius)', border: '1px dashed var(--border)', marginTop: '0.5rem' }}>
-                  <p style={{ fontSize: '12px' }}>Este precio se aplicará por defecto al seleccionar el producto en una factura.</p>
+                  <p style={{ fontSize: '12px' }}>Aquest preu s'aplicarà per defecte en seleccionar el producte en una factura.</p>
                 </div>
               </div>
             </div>

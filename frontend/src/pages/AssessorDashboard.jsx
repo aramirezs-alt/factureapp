@@ -5,7 +5,7 @@ import { Users, TrendingUp, AlertCircle, ArrowRight, Building, Loader2 } from 'l
 import toast from 'react-hot-toast';
 import AuthenticatedImage from '../components/AuthenticatedImage';
 
-const AssessorDashboard = () => {
+const AssessorTauler = () => {
   const [clients, setClients] = useState([]);
   const [summaries, setSummaries] = useState({});
   const [loading, setLoading] = useState(true);
@@ -136,4 +136,4 @@ const AssessorDashboard = () => {
   );
 };
 
-export default AssessorDashboard;
+export default AssessorTauler;

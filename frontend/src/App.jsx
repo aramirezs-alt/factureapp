@@ -7,7 +7,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
+import Tauler from './pages/Dashboard';
 import Invoices from './pages/Invoices';
 import NewInvoice from './pages/NewInvoice';
 import EditInvoice from './pages/EditInvoice';
@@ -32,7 +32,7 @@ import Profile from './pages/Profile';
 import AdvisorAccess from './pages/AdvisorAccess';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
-import AssessorDashboard from './pages/AssessorDashboard';
+import AssessorTauler from './pages/AssessorDashboard';
 import AssessorClientView from './pages/AssessorClientView';
 import Landing from './pages/Landing';
 
@@ -94,7 +94,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             
-            <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><Dashboard /></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><Tauler /></ProtectedRoute>} />
             
             <Route path="/invoices" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><Invoices /></ProtectedRoute>} />
             <Route path="/invoices/new" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><NewInvoice /></ProtectedRoute>} />
@@ -124,7 +124,7 @@ function App() {
             
             <Route path="/profile" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN', 'ASSESSOR']}><Profile /></ProtectedRoute>} />
             <Route path="/advisors" element={<ProtectedRoute allowedRoles={['USER', 'ADMIN']}><AdvisorAccess /></ProtectedRoute>} />
-            <Route path="/assessor" element={<ProtectedRoute allowedRoles={['ASSESSOR']}><AssessorDashboard /></ProtectedRoute>} />
+            <Route path="/assessor" element={<ProtectedRoute allowedRoles={['ASSESSOR']}><AssessorTauler /></ProtectedRoute>} />
             <Route path="/assessor/client/:clientId" element={<ProtectedRoute allowedRoles={['ASSESSOR']}><AssessorClientView /></ProtectedRoute>} />
             
             <Route path="*" element={<Navigate to="/" />} />

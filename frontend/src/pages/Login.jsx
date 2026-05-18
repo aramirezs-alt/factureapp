@@ -23,7 +23,7 @@ const Login = () => {
         navigate('/');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al iniciar sesión');
+      setError(err.response?.data?.message || "Error a l'iniciar sessió");
     } finally {
       setLoading(false);
     }
@@ -48,7 +48,7 @@ const Login = () => {
           <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'var(--primary)', fontWeight: '800' }}>
             FactureApp
           </h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Inicia sesión en tu cuenta</p>
+          <p style={{ color: 'var(--text-secondary)' }}>Inicia sessió al teu compte</p>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -62,14 +62,14 @@ const Login = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="ejemplo@correo.com"
+                placeholder="exemple@correu.com"
                 style={{ paddingLeft: '40px' }}
               />
             </div>
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
-            <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Contraseña</label>
+            <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Contrasenya</label>
             <div style={{ position: 'relative' }}>
               <Lock style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} size={18} />
               <input
@@ -84,7 +84,7 @@ const Login = () => {
             </div>
             <div style={{ textAlign: 'right', marginTop: '8px' }}>
               <Link to="/forgot-password" style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: '500' }}>
-                ¿Has olvidado la contraseña?
+                Has oblidat la contrasenya?
               </Link>
             </div>
           </div>
@@ -109,12 +109,12 @@ const Login = () => {
             className="btn btn-primary"
             style={{ width: '100%', padding: '12px' }}
           >
-            {loading ? <Loader2 className="animate-spin" /> : 'Entrar en el Panel'}
+            {loading ? <Loader2 className="animate-spin" /> : 'Entrar al Tauler'}
           </button>
         </form>
 
         <p style={{ textAlign: 'center', marginTop: '1.5rem', color: 'var(--text-secondary)', fontSize: '14px' }}>
-          ¿No tienes cuenta? <Link to="/register" style={{ color: 'var(--primary)', fontWeight: '600' }}>Regístrate gratis</Link>
+          No tens compte? <Link to="/register" style={{ color: 'var(--primary)', fontWeight: '600' }}>Registra't gratis</Link>
         </p>
       </div>
     </div>

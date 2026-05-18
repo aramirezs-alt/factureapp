@@ -19,7 +19,7 @@ const Register = () => {
     setLoading(true);
     try {
       await register(email, password, rol);
-      toast.success('¡Cuenta creada! Ya puedes iniciar sesión.');
+      toast.success('Compte creat! Ja pots iniciar sessió.');
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.message || 'Error al registrarse');
@@ -47,12 +47,12 @@ const Register = () => {
           <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'var(--primary)', fontWeight: '800' }}>
             FactureApp
           </h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Crea tu cuenta profesional</p>
+          <p style={{ color: 'var(--text-secondary)' }}>Crea el teu compte professional</p>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '1.25rem' }}>
-            <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Email Corporativo</label>
+            <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Email Corporatiu</label>
             <div style={{ position: 'relative' }}>
               <Mail style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} size={18} />
               <input
@@ -61,14 +61,14 @@ const Register = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="ejemplo@empresa.com"
+                placeholder="exemple@empresa.com"
                 style={{ paddingLeft: '40px' }}
               />
             </div>
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
-            <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Contraseña</label>
+            <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Contrasenya</label>
             <div style={{ position: 'relative' }}>
               <Lock style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} size={18} />
               <input
@@ -77,22 +77,22 @@ const Register = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Mínimo 6 caracteres"
+                placeholder="Mínim 6 caràcters"
                 style={{ paddingLeft: '40px' }}
               />
             </div>
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
-            <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Tipo de cuenta</label>
+            <label className="label" style={{ display: 'block', marginBottom: '6px' }}>Tipus de compte</label>
             <select
               className="input"
               value={rol}
               onChange={(e) => setRol(e.target.value)}
               style={{ width: '100%' }}
             >
-              <option value="USER">Empresa / Autónomo</option>
-              <option value="ASSESSOR">Asesor / Gestor</option>
+              <option value="USER">Empresa / Autònom</option>
+              <option value="ASSESSOR">Assessor / Gestor</option>
             </select>
           </div>
 
@@ -119,14 +119,14 @@ const Register = () => {
             {loading ? <Loader2 className="animate-spin" /> : (
               <>
                 <UserPlus size={20} />
-                <span>Registrarse ahora</span>
+                <span>Registrar-se ara</span>
               </>
             )}
           </button>
         </form>
 
         <p style={{ textAlign: 'center', marginTop: '1.5rem', color: 'var(--text-secondary)', fontSize: '14px' }}>
-          ¿Ya tienes una cuenta? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: '600' }}>Inicia sesión</Link>
+          Ja tens un compte? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: '600' }}>Inicia sessió</Link>
         </p>
       </div>
     </div>

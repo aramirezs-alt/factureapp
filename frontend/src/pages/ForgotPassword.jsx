@@ -63,7 +63,7 @@ const ForgotPassword = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="ejemplo@correo.com"
+                placeholder="exemple@correu.com"
                 style={{ paddingLeft: '40px' }}
               />
             </div>

@@ -99,14 +99,14 @@ const Layout = ({ children }) => {
     { to: '/assessor', icon: <LayoutDashboard size={20} />, label: 'Els meus Clients' },
     { to: '/profile',  icon: <UserIcon size={20} />,        label: 'El meu Perfil' },
   ] : [
-    { to: '/',          icon: <LayoutDashboard size={20} />, label: 'Panel' },
-    { to: '/invoices',  icon: <FileText size={20} />,        label: 'Facturas' },
-    { to: '/clients',   icon: <Users size={20} />,           label: 'Clientes' },
-    { to: '/providers', icon: <Truck size={20} />,           label: 'Proveedores' },
-    { to: '/products',  icon: <Package size={20} />,         label: 'Productos' },
-    { to: '/expenses',  icon: <TrendingDown size={20} />,    label: 'Gastos' },
+    { to: '/',          icon: <LayoutDashboard size={20} />, label: 'Tauler' },
+    { to: '/invoices',  icon: <FileText size={20} />,        label: 'Factures' },
+    { to: '/clients',   icon: <Users size={20} />,           label: 'Clients' },
+    { to: '/providers', icon: <Truck size={20} />,           label: 'Proveïdores' },
+    { to: '/products',  icon: <Package size={20} />,         label: 'Productes' },
+    { to: '/expenses',  icon: <TrendingDown size={20} />,    label: 'Despeses' },
     { to: '/tax-report',icon: <Calculator size={20} />,      label: 'Informes IVA' },
-    { to: '/profile',   icon: <UserIcon size={20} />,        label: 'Mi Perfil' },
+    { to: '/profile',   icon: <UserIcon size={20} />,        label: 'El meu Perfil' },
     { to: '/advisors',  icon: <Shield size={20} />,          label: 'Assessors' },
   ];
 
@@ -294,7 +294,7 @@ const Layout = ({ children }) => {
             }}
           >
             <LogOut size={20} />
-            Cerrar Sesión
+            Tancar sessió
           </button>
         </div>
       </aside>

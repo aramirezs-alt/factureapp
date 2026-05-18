@@ -118,7 +118,7 @@ const clientController = {
       await client.destroy();
       res.json({ message: 'Client deleted successfully' });
     } catch (error) {
-      res.status(400).json({ message: 'No se puede eliminar el cliente porque tiene facturas asociadas' });
+      res.status(400).json({ message: 'No es pot eliminar el client perquè té factures associades' });
     }
   },
 

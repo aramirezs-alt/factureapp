@@ -63,7 +63,7 @@ const EditProvider = () => {
             </div>
             <button type="submit" disabled={saving} className="btn btn-primary" style={{ padding: '12px 24px' }}>
               {saving ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-              Guardar Canvis
+              Desar Canvis
             </button>
           </header>
 

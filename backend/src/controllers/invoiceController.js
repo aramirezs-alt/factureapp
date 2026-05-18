@@ -258,7 +258,7 @@ const invoiceController = {
     const transaction = await sequelize.transaction();
     try {
       const { lines, client_id, serie, tipus_irpf, ...invoiceData } = req.body;
-      if (!client_id) return res.status(400).json({ message: 'El cliente es obligatorio' });
+      if (!client_id) return res.status(400).json({ message: 'El client és obligatori' });
       if (!lines || lines.length === 0) return res.status(400).json({ message: 'La factura debe tener al menos una línea' });
 
       // BLOQUEJEM EL PERFIL DE NEGOCI PER EVITAR CONDICIONS DE CARRERA (RACE CONDITIONS)
@@ -500,7 +500,7 @@ const invoiceController = {
         include: [{ model: Client }, { model: InvoiceLine }]
       });
       if (!invoice) return res.status(404).json({ message: 'Factura no encontrada' });
-      if (!invoice.Client.email) return res.status(400).json({ message: 'El cliente no tiene email configurado' });
+      if (!invoice.Client.email) return res.status(400).json({ message: 'El client no té email configurat' });
 
       const profile = await BusinessProfile.findOne({ where: { usuari_id: req.user.id } });
 

@@ -463,7 +463,7 @@ const EditExpense = () => {
                 <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   <button type="submit" disabled={saving} className="btn btn-danger w-full" style={{ padding: '12px 24px' }}>
                     {saving ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-                    Guardar Canvis
+                    Desar Canvis
                   </button>
                   <button type="button" onClick={handleDelete} className="btn btn-ghost w-full" style={{ color: 'var(--danger)', fontSize: '13px' }}>
                     <Trash2 size={18} /> Eliminar Despesa

@@ -35,7 +35,7 @@ const EditProduct = () => {
     const toastId = toast.loading('Actualizando producto...');
     try {
       await api.put(`/products/${id}`, product);
-      toast.success('Producto actualizado correctamente', { id: toastId });
+      toast.success('Producte actualizado correctamente', { id: toastId });
       navigate('/products');
     } catch (err) {
       toast.error('Error al actualizar el producto', { id: toastId });
@@ -56,13 +56,13 @@ const EditProduct = () => {
                 <ArrowLeft size={20} />
               </button>
               <div>
-                <h1>Editar Producto</h1>
+                <h1>Editar Producte</h1>
                 <p>Actualiza los detalles de tu catálogo.</p>
               </div>
             </div>
             <button type="submit" disabled={saving} className="btn btn-primary" style={{ padding: '12px 24px' }}>
               {saving ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-              Guardar Cambios
+              Desar Cambios
             </button>
           </header>
 
@@ -70,7 +70,7 @@ const EditProduct = () => {
             <div className="card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--primary)', marginBottom: '1.5rem' }}>
                 <Info size={20} />
-                <h3>Información del Producto</h3>
+                <h3>Informació del Producte</h3>
               </div>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>

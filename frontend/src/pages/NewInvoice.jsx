@@ -158,7 +158,7 @@ const NewInvoice = () => {
       toast.success('Factura creada', { id: toastId });
       navigate('/invoices');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Error al guardar', { id: toastId });
+      toast.error(err.response?.data?.message || 'Error en desar', { id: toastId });
     } finally {
       setLoading(false);
     }
@@ -174,8 +174,8 @@ const NewInvoice = () => {
                 <ArrowLeft size={20} />
               </button>
               <div>
-                <h1>{duplicateId ? 'Duplicar Factura' : 'Nueva Factura'}</h1>
-                <p>{duplicateId ? 'Creando una copia...': 'Genera un nuevo documento.'}</p>
+                <h1>{duplicateId ? 'Duplicar Factura' : 'Nova Factura'}</h1>
+                <p>{duplicateId ? 'Creant una còpia...': 'Genera un nou document.'}</p>
               </div>
             </div>
           </header>
@@ -185,14 +185,14 @@ const NewInvoice = () => {
           <div className="card" style={{ minHeight: '500px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
               <FileText size={20} color="var(--primary)" />
-              <h3>Conceptos de la Factura ({products.length} productos cargados)</h3>
+              <h3>Conceptes de la Factura ({products.length} productes carregats)</h3>
             </div>
             
             <div className="table-responsive" style={{ border: 'none', overflow: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '150px' }}>
                     <thead>
                       <tr style={{ textAlign: 'left' }}>
-                        <th style={{ padding: '0.5rem' }} className="label">CONCEPTO / PRODUCTO</th>
+                        <th style={{ padding: '0.5rem' }} className="label">CONCEPTE / PRODUCTE</th>
                         <th style={{ padding: '0.5rem', width: '80px' }} className="label">CANT.</th>
                         <th style={{ padding: '0.5rem', width: '110px' }} className="label">PRECIO</th>
                         <th style={{ padding: '0.5rem', width: '80px' }} className="label">IVA %</th>
@@ -249,7 +249,7 @@ const NewInvoice = () => {
 
                 <button type="button" onClick={addLine} className="btn btn-secondary" style={{ marginTop: '1.5rem', width: '100%' }}>
                   <Plus size={18} />
-                  Añadir Línea
+                  Afegir Línia
                 </button>
               </div>
 
@@ -269,7 +269,7 @@ const NewInvoice = () => {
               <div className="card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.25rem' }}>
                   <User size={18} color="var(--primary)" />
-                  <h3 style={{ fontSize: '16px' }}>Cliente</h3>
+                  <h3 style={{ fontSize: '16px' }}>Client</h3>
                 </div>
                 <SearchableSelect
                   options={clients.map(c => ({
@@ -358,7 +358,7 @@ const NewInvoice = () => {
 
                 <button type="submit" disabled={loading} className="btn btn-primary w-full" style={{ padding: '12px 24px' }}>
                   {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-                  Guardar Factura
+                  Desar Factura
                 </button>
               </div>
             </div>

@@ -145,7 +145,7 @@ const Landing = () => {
               <div className="dashboard-preview">
                 <div className="preview-header">
                   <div className="window-dots"><span></span><span></span><span></span></div>
-                  <div className="window-title">Dashboard - FactureApp</div>
+                  <div className="window-title">Tauler - FactureApp</div>
                 </div>
                 <div className="preview-body">
                   <div className="stats-grid">
@@ -185,7 +185,7 @@ const Landing = () => {
               {[
                 { icon: <FiFileText />, title: 'Factures Professionals', desc: 'Personalitza les teves factures amb el teu logo i envia-les per email en segons.' },
                 { icon: <FiPieChart />, title: 'Control d\'Impostos', desc: 'Previsió en temps real de l\'IVA i l\'IRPF per no portar-te sorpreses.' },
-                { icon: <FiActivity />, title: 'Dashboard Intel·ligent', desc: 'Gràfics visuals del teu rendiment mensual i evolució del negoci.' },
+                { icon: <FiActivity />, title: 'Tauler Intel·ligent', desc: 'Gràfics visuals del teu rendiment mensual i evolució del negoci.' },
                 { icon: <FiSmartphone />, title: 'Multi-dispositiu', desc: 'Accedeix a les teves dades des del mòbil, tablet o ordinador en qualsevol moment.' },
                 { icon: <FiShield />, title: 'Dades Encriptades', desc: 'Seguretat màxima per a la teva informació financera i la dels teus clients.' },
                 { icon: <FiZap />, title: 'Gratis Forever', desc: 'Sense subscripcions ni funcionalitats bloquejades. Tot és per a tu, gratis.' }
@@ -561,7 +561,7 @@ const Landing = () => {
         .trust-item { display: flex; align-items: center; gap: 0.5rem; }
         .trust-item svg { color: var(--primary); }
 
-        /* Dashboard Preview Mockup */
+        /* Tauler Preview Mockup */
         .dashboard-preview {
           background: #0f172a;
           border-radius: 24px;

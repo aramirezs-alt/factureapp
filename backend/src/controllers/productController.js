@@ -123,7 +123,7 @@ const productController = {
       res.json({ message: 'Product deleted successfully' });
     } catch (error) {
       console.error('Delete product error:', error);
-      res.status(400).json({ message: 'No se puede eliminar el producto porque está siendo usado en facturas' });
+      res.status(400).json({ message: "No es pot eliminar el producte perquè s'està utilitzant en factures" });
     }
   },
 

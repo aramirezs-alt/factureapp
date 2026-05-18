@@ -16,13 +16,13 @@ const NewClient = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const toastId = toast.loading('Guardando cliente...');
+    const toastId = toast.loading('Desant client...');
     try {
       await api.post('/clients', client);
-      toast.success('Cliente creado correctamente', { id: toastId });
+      toast.success('Client creat correctament', { id: toastId });
       navigate('/clients');
     } catch (err) {
-      toast.error('Error al guardar el cliente', { id: toastId });
+      toast.error('Error en desar el client', { id: toastId });
     } finally {
       setLoading(false);
     }
@@ -38,13 +38,13 @@ const NewClient = () => {
                 <ArrowLeft size={20} />
               </button>
               <div>
-                <h1>Nuevo Cliente</h1>
-                <p>Añade un nuevo cliente a tu base de datos profesional.</p>
+                <h1>Nou Client</h1>
+                <p>Afegeix un nou client a la teva base de dades professional.</p>
               </div>
             </div>
             <button type="submit" disabled={loading} className="btn btn-primary" style={{ padding: '12px 24px' }}>
               {loading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-              Guardar Cliente
+              Desar Client
             </button>
           </header>
 

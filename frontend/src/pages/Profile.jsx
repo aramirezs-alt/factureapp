@@ -277,7 +277,7 @@ const Profile = () => {
             <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }}>
               <button type="submit" disabled={saving} className="btn btn-primary" style={{ padding: '12px 32px' }}>
                 {saving ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-                Guardar Perfil
+                Desar Perfil
               </button>
             </div>
           </div>

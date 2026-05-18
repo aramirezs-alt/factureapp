@@ -36,7 +36,7 @@ const EditClient = () => {
     const toastId = toast.loading('Actualizando cliente...');
     try {
       await api.put(`/clients/${id}`, client);
-      toast.success('Cliente actualizado correctamente', { id: toastId });
+      toast.success('Client actualizado correctamente', { id: toastId });
       navigate('/clients');
     } catch (err) {
       toast.error('Error al actualizar el cliente', { id: toastId });
@@ -57,13 +57,13 @@ const EditClient = () => {
                 <ArrowLeft size={20} />
               </button>
               <div>
-                <h1>Editar Cliente</h1>
-                <p>Actualiza los datos de tu cliente profesional.</p>
+                <h1>Editar Client</h1>
+                <p>Actualitza les dades del teu client professional.</p>
               </div>
             </div>
             <button type="submit" disabled={saving} className="btn btn-primary" style={{ padding: '12px 24px' }}>
               {saving ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-              Guardar Cambios
+              Desar Cambios
             </button>
           </header>
 
